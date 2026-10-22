@@ -1,0 +1,228 @@
+
+{% extends 'base.html' %}
+
+{% block title %}All Requests | UBCT Portal{% endblock %}
+
+{% block content %}
+<section class="ubct-dashboard">
+
+    <header class="ubct-page-heading">
+        <div class="ubct-dashboard-heading-row">
+            <div>
+                <span class="ubct-eyebrow">Request management</span>
+                <h1 class="ubct-title">All Requests</h1>
+                <p class="ubct-subtitle">
+                    Search, filter, and review assistance requests.
+                </p>
+            </div>
+
+            <div class="ubct-action-actions">
+                <a href="{% url 'dashboard' %}"
+                   class="ubct-btn ubct-btn-secondary">
+                    ← Dashboard
+                </a>
+
+                <a href="{% url 'create_request' %}"
+                   class="ubct-btn ubct-btn-primary">
+                    ＋ New Request
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Request summary cards -->
+    <div class="ubct-stats-grid">
+
+        <article class="ubct-stat-card">
+            <span class="ubct-stat-label">Total Requests</span>
+            <strong class="ubct-stat-number">
+                {{ total_requests }}
+            </strong>
+            <span class="ubct-stat-note">
+                Requests you can access
+            </span>
+        </article>
+
+        {% for item in status_counts %}
+        <article class="ubct-stat-card">
+            <span class="ubct-stat-label">{{ item.label }}</span>
+            <strong class="ubct-stat-number">
+                {{ item.count }}
+            </strong>
+            <span class="ubct-stat-note">
+                {{ item.label }} requests
+            </span>
+        </article>
+        {% endfor %}
+
+    </div>
+
+    <!-- Search and filters -->
+    <section class="ubct-card">
+        <div class="ubct-card-head">
+            <h2>Find Requests</h2>
+            <p>Search by request ID, beneficiary, or requester username.</p>
+        </div>
+
+        <div class="ubct-card-body">
+            <form method="get" class="ubct-action-actions">
+
+                <input
+                    type="search"
+                    name="q"
+                    value="{{ search_query }}"
+                    placeholder="Search requests..."
+                    aria-label="Search requests"
+                >
+
+                <select name="status" aria-label="Filter by status">
+                    <option value="">All statuses</option>
+                    {% for value, label in status_choices %}
+                    <option value="{{ value }}"
+                        {% if selected_status == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit" class="ubct-btn ubct-btn-primary">
+                    Search
+                </button>
+
+                <a href="{% url 'all_requests' %}"
+                   class="ubct-btn ubct-btn-secondary">
+                    Clear
+                </a>
+
+            </form>
+        </div>
+    </section>
+
+    <!-- Requests table -->
+    <section class="ubct-card">
+
+        <div class="ubct-card-head ubct-section-head-row">
+            <div>
+                <h2>Requests</h2>
+                <p>
+                    Showing {{ page_obj.start_index|default:0 }}
+                    – {{ page_obj.end_index|default:0 }}
+                    of {{ page_obj.paginator.count }} matching requests.
+                </p>
+            </div>
+
+            <span class="ubct-chip ubct-chip-gray">
+                {{ page_obj.paginator.count }} results
+            </span>
+        </div>
+
+        <div class="ubct-table-wrap">
+            <table class="ubct-table">
+                <thead>
+                    <tr>
+                        <th>Request ID</th>
+                        <th>Requester</th>
+                        <th>Beneficiary</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th class="ubct-align-right">Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for req in requests %}
+                    <tr>
+                        <td>
+                            <a class="ubct-table-link"
+                               href="{% url 'request_detail' req.pk %}">
+                                {{ req.request_id }}
+                            </a>
+                        </td>
+
+                        <td>{{ req.requester.username }}</td>
+
+                        <td>{{ req.beneficiary }}</td>
+
+                        <td class="ubct-money">
+                            ₹{{ req.requested_amount }}
+                        </td>
+
+                        <td>
+                            {% if req.status == 'APPROVED' %}
+                                <span class="ubct-chip ubct-chip-green">
+                                    {{ req.get_status_display }}
+                                </span>
+                            {% elif req.status == 'PENDING' %}
+                                <span class="ubct-chip ubct-chip-gold">
+                                    {{ req.get_status_display }}
+                                </span>
+                            {% elif req.status == 'REJECTED' %}
+                                <span class="ubct-chip ubct-chip-red">
+                                    {{ req.get_status_display }}
+                                </span>
+                            {% elif req.status == 'TRANSFERRED' %}
+                                <span class="ubct-chip ubct-chip-green">
+                                    {{ req.get_status_display }}
+                                </span>
+                            {% else %}
+                                <span class="ubct-chip ubct-chip-gray">
+                                    {{ req.get_status_display }}
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <td class="ubct-align-right">
+                            <a href="{% url 'request_detail' req.pk %}"
+                               class="ubct-table-link">
+                                View request →
+                            </a>
+                        </td>
+                    </tr>
+
+                    {% empty %}
+                    <tr>
+                        <td colspan="6">
+                            <div class="ubct-empty">
+                                <strong class="ubct-empty-title">
+                                    No requests found
+                                </strong>
+                                Try changing your search or status filter.
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <div class="ubct-card-body">
+            <div class="ubct-action-actions">
+
+                {% if page_obj.has_previous %}
+                <a class="ubct-btn ubct-btn-secondary"
+                   href="?q={{ search_query|urlencode }}&status={{ selected_status|urlencode }}&page={{ page_obj.previous_page_number }}">
+                    ← Previous
+                </a>
+                {% endif %}
+
+                <span class="ubct-chip ubct-chip-gray">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                </span>
+
+                {% if page_obj.has_next %}
+                <a class="ubct-btn ubct-btn-secondary"
+                   href="?q={{ search_query|urlencode }}&status={{ selected_status|urlencode }}&page={{ page_obj.next_page_number }}">
+                    Next →
+                </a>
+                {% endif %}
+
+            </div>
+        </div>
+        {% endif %}
+
+    </section>
+
+</section>
+{% endblock %}

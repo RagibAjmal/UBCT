@@ -1,0 +1,32 @@
+
+<section class="ubct-card ubct-requester-card">
+    <div class="ubct-requester-info">
+
+        <div class="ubct-requester-avatar" aria-hidden="true">
+            {{ requester.get_full_name|default:requester.username|slice:":1"|upper }}
+        </div>
+
+        <div class="ubct-requester-details">
+            <span class="ubct-requester-label">REQUEST RAISED BY</span>
+
+            <strong class="ubct-requester-name">
+                {{ requester.get_full_name|default:requester.username }}
+            </strong>
+
+            {% if requester.email %}
+                <span class="ubct-requester-email">
+                    {{ requester.email }}
+                </span>
+            {% endif %}
+        </div>
+
+        {% if created_at %}
+            <div class="ubct-requester-date">
+                <span class="ubct-requester-date-label">Created on</span>
+                <strong>{{ created_at|date:"d M Y" }}</strong>
+                <span>{{ created_at|date:"h:i A" }}</span>
+            </div>
+        {% endif %}
+
+    </div>
+</section>

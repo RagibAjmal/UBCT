@@ -1,0 +1,40 @@
+<section class="ubct-card">
+    <div class="ubct-card-head">
+        <h2>Request Summary</h2>
+        <p>The main details recorded for this request.</p>
+    </div>
+    <div class="ubct-card-body">
+        <div class="ubct-summary-grid">
+            <div class="ubct-summary-item">
+                <span class="ubct-summary-label">Beneficiary (Requested By)</span>
+                <span class="ubct-summary-value">{{ req.beneficiary.full_name }}</span>
+            </div>
+            <div class="ubct-summary-item">
+                <span class="ubct-summary-label">Requested For (Relation)</span>
+                <span class="ubct-summary-value">
+                    {{ req.requested_for|default:"—" }}
+                </span>
+            </div>
+            <div class="ubct-summary-item">
+                <span class="ubct-summary-label">Amount Requested</span>
+                <span class="ubct-summary-value amount">₹{{ req.requested_amount }}</span>
+            </div>            
+             <div class="ubct-summary-item">
+                <span class="ubct-summary-label">Approved Amount</span>
+                <span class="ubct-summary-value">
+                    {{ req.approved_amount|default:"—" }}
+                </span>
+            </div>            
+            <div class="ubct-summary-item">
+                <span class="ubct-summary-label">Classification</span>
+                <span class="ubct-summary-value">{{ req.classification }}</span>
+            </div>
+            <div class="ubct-summary-item">
+                <span class="ubct-summary-label">Reason for Assistance</span>
+                <span class="ubct-summary-value">
+                    {{ req.reason_for_assistance|default:"—" }}
+                </span>
+            </div>
+        </div>
+    </div>
+</section>

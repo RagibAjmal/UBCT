@@ -1,0 +1,47 @@
+
+<section class="ubct-card">
+    <div class="ubct-card-head">
+        <h3>{{ transfer_list_title|default:"Fund Transfers" }}</h3>
+        <p>{{ transfer_list_description|default:"Transfer details and supporting documents." }}</p>
+    </div>
+
+    <div class="ubct-card-body">
+        {% if req.fundtransfer_set.exists %}
+            <ul class="ubct-transfer-list">
+                {% for transfer in req.fundtransfer_set.all %}
+                    <li class="ubct-transfer-item">
+                        <div class="ubct-transfer-main">
+                            <span class="ubct-transfer-ref">
+                                {{ transfer.transaction_reference|default:"Reference not provided" }}
+                            </span>
+
+                            <span class="ubct-transfer-meta">
+                                {{ transfer.transfer_date|date:"M d, Y" }}
+                            </span>
+
+                            <span class="ubct-transfer-classification">
+                                {{ transfer.classification|default:"Unclassified" }}
+                            </span>
+
+                            <a
+                                href="{% url 'fund_transfer_documents' transfer.pk %}"
+                                class="ubct-btn ubct-btn-secondary ubct-btn-small"
+                            >
+                                View transfer documents
+                                ({{ transfer.documents.count }})
+                            </a>
+                        </div>
+
+                        <span class="ubct-transfer-amount">
+                            ₹{{ transfer.amount }}
+                        </span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="ubct-empty">
+                No transfer records were found for this request.
+            </div>
+        {% endif %}
+    </div>
+</section>

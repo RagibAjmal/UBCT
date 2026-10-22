@@ -1,0 +1,32 @@
+<section class="ubct-card ubct-action-panel ubct-action-panel--blue">
+    <div class="ubct-action-title">
+        <span class="ubct-action-icon" aria-hidden="true">₹</span>
+        <div>
+            <h3>Execute Fund Transfer</h3>
+            <p style="margin:0;">Record the transfer details, then mark the request as transferred when complete.</p>
+        </div>
+    </div>
+
+    {% include "finance/fund_transfer_list.html" with req=req transfer_list_title="Recorded Transfers" transfer_list_description="Transfers currently associated with this request." %}
+
+    {% if can_manage_transfers %}
+        {% if not req.fundtransfer_set.exists %}
+            <p>
+                Target amount:
+                <strong>₹{{ req.requested_amount }}</strong>
+            </p>
+        {% endif %}
+    <div class="ubct-action-actions">
+        <a href="{% url 'add_fund_transfer' req.pk %}" class="ubct-btn ubct-btn-secondary">
+            + Add Fund Transfer
+        </a>
+
+        <form method="POST" action="{% url 'process_transfer' req.pk %}">
+            {% csrf_token %}
+            <button type="submit" class="ubct-btn ubct-btn-primary">
+                Mark as Transferred →
+            </button>
+        </form>
+    </div>
+    {% endif %}
+</section>

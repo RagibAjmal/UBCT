@@ -1,0 +1,73 @@
+
+<section class="ubct-card ubct-review-documents">
+
+    <div class="ubct-card-head">
+        <h2>Request Documents</h2>
+        <p>
+            View or download supporting documents for request
+            {{ req.request_id }}.
+        </p>
+    </div>
+
+    <div class="ubct-card-body">
+
+        {% if uploaded_documents %}
+            <div class="ubct-document-grid">
+                {% for document in uploaded_documents %}
+                    <article class="ubct-document-card">
+
+                        <div class="ubct-document-icon">
+                            {% if document.file.name|lower|slice:"-4:" == ".pdf" %}
+                                PDF
+                            {% else %}
+                                IMG
+                            {% endif %}
+                        </div>
+
+                        <div class="ubct-document-info">
+                            <strong class="ubct-document-name">
+                                {{ document.file.name|cut:"request_documents/" }}
+                            </strong>
+
+                            {% if document.tag %}
+                                <span class="ubct-document-meta">
+                                    {{ document.get_tag_display|default:document.tag }}
+                                </span>
+                            {% else %}
+                                <span class="ubct-document-meta">
+                                    No category assigned
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <div class="ubct-document-actions">
+                            <a
+                                href="{{ document.download_url }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="ubct-btn ubct-btn-secondary ubct-btn-small"
+                            >
+                                View
+                            </a>
+
+                            <a
+                                href="{{ document.download_url }}"
+                                download
+                                class="ubct-btn ubct-btn-primary ubct-btn-small"
+                            >
+                                Download
+                            </a>
+                        </div>
+
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="ubct-document-empty">
+                <h3>No supporting documents</h3>
+                <p>No documents have been uploaded for this request.</p>
+            </div>
+        {% endif %}
+
+    </div>
+</section>

@@ -1,0 +1,32 @@
+<section class="ubct-card" aria-label="Request progress">
+    <div class="ubct-card-head">
+        <h2>Request Progress</h2>
+        <p>Follow this request from draft through approval and transfer.</p>
+    </div>
+    <div class="ubct-timeline">
+        <div class="ubct-timeline-track">
+            <div class="ubct-timeline-progress"
+                 style="width:{% if req.status == req.Status.DRAFT %}0{% elif req.status == req.Status.PENDING %}25{% elif req.status == req.Status.APPROVED %}50{% elif req.status == req.Status.TRANSFERRED %}75{% else %}0{% endif %}%;"></div>
+
+            <div class="ubct-stage is-complete {% if req.status == req.Status.DRAFT %}is-current{% endif %}">
+                <div class="ubct-stage-circle">1</div>
+                <span class="ubct-stage-label">Draft</span>
+            </div>
+
+            <div class="ubct-stage {% if req.status == req.Status.PENDING or req.status == req.Status.APPROVED or req.status == req.Status.TRANSFERRED %}is-complete{% endif %} {% if req.status == req.Status.PENDING %}is-current{% endif %}">
+                <div class="ubct-stage-circle">2</div>
+                <span class="ubct-stage-label">Pending approval</span>
+            </div>
+
+            <div class="ubct-stage {% if req.status == req.Status.APPROVED or req.status == req.Status.TRANSFERRED %}is-complete{% endif %} {% if req.status == req.Status.APPROVED %}is-current{% endif %}">
+                <div class="ubct-stage-circle">3</div>
+                <span class="ubct-stage-label">Approved</span>
+            </div>
+
+            <div class="ubct-stage {% if req.status == req.Status.TRANSFERRED %}is-complete is-current{% endif %}">
+                <div class="ubct-stage-circle">4</div>
+                <span class="ubct-stage-label">Transferred</span>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Add Fund Transfer | UBCT Portal{% endblock %}
+
+{% block content %}
+<main class="ubct-form-page">
+    <header class="ubct-page-heading"><span class="ubct-eyebrow">Finance · Fund transfer</span><h1 class="ubct-title">Add Fund Transfer</h1><p class="ubct-subtitle">Recording a transfer for Request <span class="ubct-request-chip">#{{ req.request_id|default:req.pk }}</span>. Check the details before saving.</p></header>
+    <section class="ubct-card">
+        <div class="ubct-card-head"><h2>Transfer information</h2><p>Record the transfer amount, date, classification, and transaction reference.</p></div>
+        <div class="ubct-card-body">
+            <form method="POST" class="ubct-generic-form">
+                {% csrf_token %}
+                {% if form.non_field_errors %}<div class="ubct-form-alert" role="alert">{% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}</div>{% endif %}
+                <div class="ubct-form-field"><label class="ubct-field-label" for="{{ form.amount.id_for_label }}">Transfer Amount (₹)</label><div class="ubct-form-control">{{ form.amount }}</div>{% if form.amount.errors %}<ul class="ubct-error-list">{% for error in form.amount.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}{% if form.amount.help_text %}<p class="ubct-help-text">{{ form.amount.help_text }}</p>{% endif %}</div>
+                <div class="ubct-form-field"><label class="ubct-field-label" for="{{ form.transfer_date.id_for_label }}">Transfer Date</label><div class="ubct-form-control">{{ form.transfer_date }}</div>{% if form.transfer_date.errors %}<ul class="ubct-error-list">{% for error in form.transfer_date.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}{% if form.transfer_date.help_text %}<p class="ubct-help-text">{{ form.transfer_date.help_text }}</p>{% endif %}</div>
+                <div class="ubct-form-field"><label class="ubct-field-label" for="{{ form.classification.id_for_label }}">Classification</label><div class="ubct-form-control">{{ form.classification }}</div>{% if form.classification.errors %}<ul class="ubct-error-list">{% for error in form.classification.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}{% if form.classification.help_text %}<p class="ubct-help-text">{{ form.classification.help_text }}</p>{% endif %}</div>
+                <div class="ubct-form-field"><label class="ubct-field-label" for="{{ form.transaction_reference.id_for_label }}">Transaction Reference</label><div class="ubct-form-control">{{ form.transaction_reference }}</div>{% if form.transaction_reference.errors %}<ul class="ubct-error-list">{% for error in form.transaction_reference.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}{% if form.transaction_reference.help_text %}<p class="ubct-help-text">{{ form.transaction_reference.help_text }}</p>{% endif %}</div>
+                <div class="ubct-form-actions"><a href="{% url 'dashboard' %}" class="ubct-btn ubct-btn-secondary">Cancel</a><button type="submit" class="ubct-btn ubct-btn-primary">Save Transfer Record →</button></div>
+            </form>
+        </div>
+    </section>
+</main>
+
+{% if transfer %}
+    <section class="ubct-card">
+        <div class="ubct-card-head">
+            <h2>Transfer Documents</h2>
+            <p>Upload receipts and supporting evidence for this transfer.</p>
+        </div>
+
+        <div class="ubct-card-body">
+            {% include "grants/components/document_uploader.html" with uploaded_documents=uploaded_documents upload_url=upload_url document_tag_choices=document_tag_choices %}
+        </div>
+    </section>
+{% endif %}
+{% endblock %}

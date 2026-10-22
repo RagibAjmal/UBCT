@@ -1,0 +1,53 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Create Request | UBCT Portal{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+      rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<main class="ubct-form-page">
+    <header class="ubct-page-heading">
+        <span class="ubct-eyebrow">Request management</span>
+        <h1 class="ubct-title">Create New Request</h1>
+        <p class="ubct-subtitle">
+            Enter the beneficiary and request details. After creating the request,
+            you can upload supporting documents and request approval.
+        </p>
+    </header>
+
+    {% include "grants/components/request_raised_by.html" with requester=request.user %}
+
+    <section class="ubct-card">
+        <div class="ubct-card-head">
+            <h2>Request information</h2>
+            <p>Complete the required fields before continuing.</p>
+        </div>
+
+        <div class="ubct-card-body">
+            {% include "grants/components/request_form.html" with form=form form_action=request.path show_save_draft=True submit_label="Create Request →" %}
+        </div>
+    </section>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+    $(function () {
+        if ($.fn.select2 && $('.select2-beneficiary').length) {
+            $('.select2-beneficiary').select2({
+                width: '100%',
+                placeholder: 'Search for a beneficiary...',
+                allowClear: true
+            });
+        }
+    });
+</script>
+{% endblock %}
+

@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard | UBCT Portal{% endblock %}
+
+{% block content %}
+<section class="ubct-dashboard">
+    <header class="ubct-page-heading">       
+        <div class="ubct-dashboard-heading-row">
+            <div class="ubct-dashboard-heading-content">
+                <span class="ubct-eyebrow">Member workspace</span>
+                <h1 class="ubct-title">Your Dashboard</h1>
+                <p class="ubct-subtitle">
+                    Manage requests, review approval tasks, and track recorded assistance.
+                </p>
+            </div>
+
+            <div class="ubct-dashboard-heading-actions">
+                <a href="{% url 'all_requests' %}"
+                class="ubct-btn ubct-btn-secondary">
+                    All Requests →
+                </a>
+
+                <a href="{% url 'create_request' %}"
+                class="ubct-btn ubct-btn-primary">
+                    ＋ New Request
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="ubct-stats-grid">
+        <article class="ubct-stat-card">
+            <span class="ubct-stat-label">My Requests</span>
+            <strong class="ubct-stat-number">{{ my_requests|length }}</strong>
+            <span class="ubct-stat-note">Requests you've submitted</span>
+        </article>
+        {% if can_review_approvals %}
+        <article class="ubct-stat-card ubct-stat-card-gold">
+            <span class="ubct-stat-label">Pending Approvals</span>
+            <strong class="ubct-stat-number">{{ pending_approvals|length }}</strong>
+            <span class="ubct-stat-note">Waiting for your review</span>
+        </article>
+        {% endif %}
+    </div>
+
+    {% if can_review_approvals %}
+    <section class="ubct-card">
+        <div class="ubct-card-head ubct-section-head-row">
+            <div><h2>Pending Approvals</h2><p>Requests waiting for an approval decision.</p></div>
+            <span class="ubct-chip ubct-chip-gold">{{ pending_approvals|length }} pending</span>
+        </div>
+        <div class="ubct-table-wrap">
+            <table class="ubct-table">
+                <thead><tr><th>Request ID</th><th>Requester</th><th>Beneficiary</th><th>Amount</th><th class="ubct-align-right">Action</th></tr></thead>
+                <tbody>
+                    {% for req in pending_approvals %}
+                    <tr>
+                        <td><a class="ubct-table-link" href="{% url 'request_detail' req.pk %}">{{ req.request_id }}</a></td>
+                        <td>{{ req.requester.username }}</td>
+                        <td>{{ req.beneficiary }}</td>
+                        <td class="ubct-money">₹{{ req.requested_amount }}</td>
+                        <td class="ubct-align-right"><a href="{% url 'request_detail' req.pk %}" class="ubct-btn ubct-btn-small ubct-btn-primary">Review →</a></td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="5"><div class="ubct-empty">You're all caught up. No requests currently need your approval.</div></td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+    {% endif %}
+
+    {% if can_manage_transfers %}
+    <section class="ubct-card">
+        <div class="ubct-card-head ubct-section-head-row">
+            <div>
+                <h2>Approved Requests for Transfer</h2>
+                <p>Record and complete transfers for approved requests.</p>
+            </div>
+            <span class="ubct-chip ubct-chip-green">{{ transfer_requests|length }} approved</span>
+        </div>
+        <div class="ubct-table-wrap">
+            <table class="ubct-table">
+                <thead>
+                    <tr>
+                        <th>Request ID</th>
+                        <th>Beneficiary</th>
+                        <th>Amount</th>
+                        <th>Transfers</th>
+                        <th class="ubct-align-right">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in transfer_requests %}
+                    <tr>
+                        <td>{{ req.request_id }}</td>
+                        <td>{{ req.beneficiary }}</td>
+                        <td class="ubct-money">₹{{ req.requested_amount }}</td>
+                        <td>{{ req.fundtransfer_set.all|length }}</td>
+                        <td class="ubct-align-right">
+                            <div class="ubct-action-actions">
+                                <a href="{% url 'add_fund_transfer' req.pk %}"
+                                   class="ubct-btn ubct-btn-secondary ubct-btn-small">
+                                    Add transfer
+                                </a>
+                                {% if req.fundtransfer_set.exists %}
+                                <form method="post" action="{% url 'process_transfer' req.pk %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="ubct-btn ubct-btn-primary ubct-btn-small">
+                                        Complete request
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5">
+                            <div class="ubct-empty">No approved requests are waiting for transfer.</div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+    {% endif %}
+
+    <section class="ubct-card">
+        <div class="ubct-card-head ubct-section-head-row">
+            <div><h2>My Requests</h2><p>View the status and details of requests you've submitted.</p></div>
+            <a href="{% url 'create_request' %}" class="ubct-btn ubct-btn-secondary ubct-btn-small">＋ New Request</a>
+        </div>
+        <div class="ubct-table-wrap">
+            <table class="ubct-table">
+                <thead><tr><th>Request ID</th><th>Beneficiary</th><th>Amount</th><th>Status</th><th class="ubct-align-right">Details</th></tr></thead>
+                <tbody>
+                    {% for req in my_requests %}
+                    <tr>
+                        <td><a class="ubct-table-link" href="{% url 'request_detail' req.pk %}">{{ req.request_id }}</a></td>
+                        <td>{{ req.beneficiary }}</td>
+                        <td class="ubct-money">₹{{ req.requested_amount }}</td>
+                        <td>
+                            {% if req.status == 'Approved' %}<span class="ubct-chip ubct-chip-green">{{ req.status }}</span>
+                            {% elif req.status == 'Pending' %}<span class="ubct-chip ubct-chip-gold">{{ req.status }}</span>
+                            {% elif req.status == 'Rejected' %}<span class="ubct-chip ubct-chip-red">{{ req.status }}</span>
+                            {% else %}<span class="ubct-chip ubct-chip-gray">{{ req.status }}</span>{% endif %}
+                        </td>
+                        <td class="ubct-align-right"><a href="{% url 'request_detail' req.pk %}" class="ubct-table-link">View request →</a></td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="5"><div class="ubct-empty"><strong class="ubct-empty-title">No requests yet</strong>Your submitted requests will appear here.<div style="margin-top:14px;"><a class="ubct-btn ubct-btn-primary" href="{% url 'create_request' %}">Create your first request</a></div></div></td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</section>
+{% endblock %}

@@ -1,0 +1,24 @@
+<section class="ubct-card ubct-action-panel ubct-action-panel--gold">
+    <div class="ubct-action-title">
+        <span class="ubct-action-icon" aria-hidden="true">!</span>
+        <div>
+            <h3>Action Required</h3>
+            <p style="margin:0;">Review the request and its recorded approval history.</p>
+        </div>
+    </div>
+
+    {% include 'grants/components/approval_log.html' with req=req %}
+
+    <form method="POST" action="{% url 'approve_request' req.pk %}" class="mt-4">
+        {% csrf_token %}
+        {% if has_approved %}
+            <button type="button" disabled class="ubct-btn ubct-btn-secondary">
+                ✓ Already Approved
+            </button>
+        {% else %}
+            <button type="submit" class="ubct-btn ubct-btn-primary">
+                Approve Request →
+            </button>
+        {% endif %}
+    </form>
+</section>

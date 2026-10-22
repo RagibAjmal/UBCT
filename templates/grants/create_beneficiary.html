@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Add Beneficiary | UBCT Portal{% endblock %}
+
+{% block content %}
+<main class="ubct-form-page">
+    <header class="ubct-page-heading"><span class="ubct-eyebrow">Beneficiary management</span><h1 class="ubct-title">Add New Beneficiary</h1><p class="ubct-subtitle">Enter the beneficiary's details and attach any required supporting document.</p></header>
+    <section class="ubct-card">
+        <div class="ubct-card-head"><h2>Beneficiary information</h2><p>Please review the details before saving.</p></div>
+        <div class="ubct-card-body">
+            <form method="POST" enctype="multipart/form-data" class="ubct-generic-form">
+                {% csrf_token %}
+                {% if next_url %}<input type="hidden" name="next" value="{{ next_url }}">{% endif %}
+                {% if form.non_field_errors %}<div class="ubct-form-alert" role="alert">{% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}</div>{% endif %}
+                {% for field in form %}
+                    {% if field.is_hidden %}{{ field }}{% else %}
+                        <div class="ubct-form-field"><label class="ubct-field-label" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}<span class="ubct-required"> *</span>{% endif %}</label><div class="ubct-form-control">{{ field }}</div>
+                        {% if field.help_text %}<p class="ubct-help-text">{{ field.help_text }}</p>{% endif %}
+                        {% if field.errors %}<ul class="ubct-error-list">{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}</div>
+                    {% endif %}
+                {% endfor %}
+                <div class="ubct-form-actions"><a href="{% if next_url %}{{ next_url }}{% else %}{% url 'dashboard' %}{% endif %}" class="ubct-btn ubct-btn-secondary">Cancel</a><button type="submit" class="ubct-btn ubct-btn-primary">Save Beneficiary →</button></div>
+            </form>
+        </div>
+    </section>
+</main>
+{% endblock %}

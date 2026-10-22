@@ -1,0 +1,38 @@
+<section class="ubct-card ubct-document-upload">
+    <div class="ubct-card-head">
+        <h2>Supporting Documents</h2>
+        <p>
+            Upload supporting documents for request {{ req.request_id }}.
+        </p>
+    </div>
+
+    <div class="ubct-card-body">
+
+      {% include "grants/components/document_uploader.html" with uploaded_documents=uploaded_documents upload_url=upload_url tag_url_base=tag_url_base delete_url_base=delete_url_base document_tag_choices=document_tag_choices %}
+
+        <hr>
+
+        <!-- Request approval separately -->
+        <p class="ubct-help-text">
+            Upload at least one supporting document before requesting approval.
+        </p>
+
+        <div class="ubct-form-actions ubct-approval-actions">
+            <form
+                method="POST"
+                action="{% url 'submit_for_approval' req.pk %}"
+            >
+                {% csrf_token %}
+
+                <button
+                    type="submit"
+                    class="ubct-btn ubct-btn-primary"
+                    {% if not uploaded_documents %}disabled{% endif %}
+                >
+                    Request Approval →
+                </button>
+            </form>
+        </div>
+
+    </div>
+</section>

@@ -1,0 +1,12 @@
+
+<section class="ubct-card ubct-action-panel ubct-action-panel--green">
+    <div class="ubct-action-title">
+        <span class="ubct-action-icon" aria-hidden="true">✓</span>
+        <div>
+            <h3>Transfer Complete</h3>
+            <p style="margin:0;">This request has been marked as transferred and closed.</p>
+        </div>
+    </div>
+
+    {% include "finance/fund_transfer_list.html" with req=req transfer_list_title="Final Transfer Records" transfer_list_description="Transfer references, amounts, and supporting documents recorded for this request." %}
+</section>

@@ -1,0 +1,18 @@
+
+<section class="ubct-draft-editor">
+
+    <!-- Draft form -->
+    <section class="ubct-card">
+        <div class="ubct-card-head">
+            <h2>Edit Draft Request</h2>
+            <p>
+                Review and update all request details before continuing
+                to document upload.
+            </p>
+        </div>
+        <div class="ubct-card-body">
+           {% include "grants/components/request_form.html" with form=form form_action=edit_url show_save_draft=True submit_label="Upload Documents →" %}
+        </div>
+    </section>
+
+</section>

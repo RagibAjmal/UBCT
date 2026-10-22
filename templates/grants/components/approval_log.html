@@ -1,0 +1,24 @@
+{% if req.approvalsignoff_set.exists %}
+<section class="ubct-card">
+    <div class="ubct-card-head">
+        <h3>Approval History</h3>
+        <p>Recorded sign-offs for this request.</p>
+    </div>
+    <div class="ubct-card-body">
+        <ul class="ubct-approval-list">
+            {% for approval in req.approvalsignoff_set.all %}
+                <li class="ubct-approval-item">
+                    <span class="ubct-approval-check" aria-hidden="true">✓</span>
+                    <div class="ubct-approval-copy">
+                        <strong>{{ approval.approver.get_full_name|default:approval.approver.username }}</strong>
+                        approved on {{ approval.timestamp|date:"M d, Y - h:i A" }}
+                        <span class="ubct-approval-meta">
+                            IP: {{ approval.ip_address }} · Hash: {{ approval.cryptographic_hash|truncatechars:15 }}
+                        </span>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</section>
+{% endif %}

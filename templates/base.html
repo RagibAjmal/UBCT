@@ -1,0 +1,137 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#064C43">
+    <title>{% block title %}UBCT Portal{% endblock %}</title>
+
+    <!-- Kept for compatibility with existing templates that still use Tailwind classes. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{% static 'css/ubct.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="ubct-body">
+    <header class="ubct-site-header">
+        <div class="ubct-nav-inner">
+            <a class="ubct-brand" href="{% url 'dashboard' %}" aria-label="United Brothers Charitable Trust portal home">
+                <span class="ubct-brand-copy">
+                    <strong>UBCT Portal</strong>
+                </span>
+            </a>
+
+            <div class="ubct-nav-right">
+                <div class="ubct-account-menu" id="ubctAccountMenu">
+                    <button type="button"
+                            class="ubct-account-trigger"
+                            id="ubctAccountToggle"
+                            aria-expanded="false"
+                            aria-controls="ubctAccountDropdown" aria-label="Open account menu">
+                        <span class="ubct-account-avatar" aria-hidden="true">
+                            {% if user.is_authenticated %}{{ user.username|first|upper }}{% else %}↗{% endif %}
+                        </span>
+                        <span class="ubct-account-trigger-copy">
+                            <strong>{% if user.is_authenticated %}{{ user.get_short_name|default:user.username }}{% else %}Account{% endif %}</strong>
+                        </span>
+                    </button>
+
+                    <div class="ubct-account-dropdown" id="ubctAccountDropdown" hidden>
+                        {% if user.is_authenticated %}
+                            <div class="ubct-account-dropdown-heading">
+                                <span class="ubct-account-dropdown-name">{{ user.get_full_name|default:user.username }}</span>
+                                <span class="ubct-account-dropdown-caption">United Brothers Charitable Trust</span>
+                            </div>
+                            <div class="ubct-account-divider"></div>
+                            <a class="ubct-account-menu-item" href="{% url 'dashboard' %}">
+                                <span class="ubct-menu-icon" aria-hidden="true">⌂</span>
+                                <span>Dashboard</span>
+                            </a>
+                            {% if user.is_staff %}
+                                <a class="ubct-account-menu-item" href="{% url 'admin:index' %}">
+                                    <span class="ubct-menu-icon" aria-hidden="true">⚙</span>
+                                    <span>Admin Portal</span>
+                                </a>
+                            {% endif %}
+                            <div class="ubct-account-divider"></div>
+                            <form method="post" action="{% url 'account_logout' %}" class="ubct-account-logout-form">
+                                {% csrf_token %}
+                                <button type="submit" class="ubct-account-menu-item ubct-account-menu-logout">
+                                    <span class="ubct-menu-icon" aria-hidden="true">↪</span>
+                                    <span>Log Out</span>
+                                </button>
+                            </form>
+                        {% else %}
+                            <div class="ubct-account-dropdown-heading">
+                                <span class="ubct-account-dropdown-name">Welcome</span>
+                                <span class="ubct-account-dropdown-caption">Sign in to access the portal.</span>
+                            </div>
+                            <div class="ubct-account-divider"></div>
+                            <a class="ubct-account-menu-item" href="{% url 'account_login' %}">
+                                <span class="ubct-menu-icon" aria-hidden="true">↗</span>
+                                <span>Login</span>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="ubct-page-shell">
+        {% if messages %}
+            <div class="ubct-messages" aria-live="polite">
+                {% for message in messages %}
+                    <div class="ubct-message ubct-message-{{ message.tags|default:'info' }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="ubct-site-footer">
+        <div class="ubct-footer-inner">
+            <span>United Brothers Charitable Trust</span>
+            <span>United in Purpose. Together in Service.</span>
+        </div>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+    <script>
+        (function () {
+            const menu = document.getElementById('ubctAccountMenu');
+            const toggle = document.getElementById('ubctAccountToggle');
+            const dropdown = document.getElementById('ubctAccountDropdown');
+
+            if (!menu || !toggle || !dropdown) return;
+
+            function closeMenu() {
+                dropdown.hidden = true;
+                dropdown.classList.remove('is-open');
+                toggle.setAttribute('aria-expanded', 'false');
+            }
+
+            toggle.addEventListener('click', function () {
+                const shouldOpen = dropdown.hidden;
+                dropdown.hidden = !shouldOpen;
+                dropdown.classList.toggle('is-open', shouldOpen);
+                toggle.setAttribute('aria-expanded', String(shouldOpen));
+            });
+
+            document.addEventListener('click', function (event) {
+                if (!menu.contains(event.target)) closeMenu();
+            });
+
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape' && !dropdown.hidden) {
+                    closeMenu();
+                    toggle.focus();
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

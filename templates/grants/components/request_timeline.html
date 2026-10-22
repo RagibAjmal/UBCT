@@ -1,0 +1,29 @@
+{# templates/grants/components/request_timeline.html #}
+
+{% with status=req.status %}
+    {% if status == "DRAFT" %}
+        {% with current_step=1 %}
+            {% include "grants/components/request_timeline_steps.html" %}
+        {% endwith %}
+
+    {% elif status == "DOCUMENTS_REQUIRED" %}
+        {% with current_step=2 %}
+            {% include "grants/components/request_timeline_steps.html" %}
+        {% endwith %}
+
+    {% elif status == "PENDING" %}
+        {% with current_step=3 %}
+            {% include "grants/components/request_timeline_steps.html" %}
+        {% endwith %}
+
+    {% elif status == "APPROVED" %}
+        {% with current_step=4 %}
+            {% include "grants/components/request_timeline_steps.html" %}
+        {% endwith %}
+
+    {% elif status == "TRANSFERRED" %}
+        {% with current_step=5 %}
+            {% include "grants/components/request_timeline_steps.html" %}
+        {% endwith %}
+    {% endif %}
+{% endwith %}

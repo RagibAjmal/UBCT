@@ -1,0 +1,14 @@
+<section class="ubct-timeline" aria-label="Request progress">
+    {% for step in timeline_steps %}
+        <div class="ubct-timeline-step{% if current_step > step.number %} is-complete{% elif current_step == step.number %} is-current{% endif %}">
+            <div class="ubct-timeline-marker">
+                {% if current_step > step.number %}
+                    ✓
+                {% else %}
+                    {{ step.number }}
+                {% endif %}
+            </div>
+            <div class="ubct-timeline-label">{{ step.label }}</div>
+        </div>
+    {% endfor %}
+</section>

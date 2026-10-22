@@ -1,0 +1,103 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Transfer Documents | UBCT Portal{% endblock %}
+
+{% block content %}
+<main class="ubct-form-page">
+
+    <header class="ubct-page-heading">
+        <span class="ubct-eyebrow">Finance · Fund transfer</span>
+
+        <h1 class="ubct-title">Transfer Documents</h1>
+
+        <p class="ubct-subtitle">
+            Request #{{ req.request_id|default:req.pk }}
+            · Transfer #{{ transfer.pk }}
+            · ₹{{ transfer.amount }}
+        </p>
+    </header>
+
+    {% if read_only %}
+        <section class="ubct-card ubct-action-panel ubct-action-panel--green">
+            <div class="ubct-action-title">
+                <span class="ubct-action-icon" aria-hidden="true">✓</span>
+                <div>
+                    <h3>Transfer Completed</h3>
+                    <p style="margin:0;">
+                        This request has been transferred. Supporting documents
+                        are available for viewing only.
+                    </p>
+                </div>
+            </div>
+        </section>
+    {% endif %}
+
+    <section class="ubct-card">
+        <div class="ubct-card-head">
+            <h2>Transfer evidence</h2>
+
+            <p>
+                {% if read_only %}
+                    View receipts, bank confirmations, and transaction proofs.
+                {% else %}
+                    Upload receipts, bank confirmations, and transaction proofs.
+                {% endif %}
+            </p>
+        </div>
+
+        <div class="ubct-card-body">
+
+            {% if read_only %}
+
+                {% for document in uploaded_documents %}
+                    <div class="ubct-transfer-item">
+                        <div class="ubct-transfer-main">
+
+                            <span class="ubct-transfer-ref">
+                                {{ document.get_tag_display|default:document.file.name }}
+                            </span>
+
+                            <span class="ubct-transfer-meta">
+                                {{ document.file.name }}
+                            </span>
+
+                            {% if document.file %}
+                                <a
+                                    href="{{ document.download_url }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="ubct-btn ubct-btn-secondary ubct-btn-small"
+                                >
+                                    View document
+                                </a>
+                            {% endif %}
+
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="ubct-empty">
+                        No supporting documents have been uploaded for this transfer.
+                    </div>
+                {% endfor %}
+
+            {% else %}
+
+                {% include "grants/components/document_uploader.html" with uploaded_documents=uploaded_documents upload_url=upload_url document_tag_choices=document_tag_choices %}
+
+            {% endif %}
+
+        </div>
+    </section>
+
+    <div class="ubct-form-actions">
+        <a
+            href="{% url 'request_detail' req.pk %}"
+            class="ubct-btn ubct-btn-secondary"
+        >
+            Back to Request
+        </a>
+    </div>
+
+</main>
+{% endblock %}

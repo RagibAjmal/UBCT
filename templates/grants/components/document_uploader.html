@@ -1,0 +1,135 @@
+
+<section class="ubct-document-uploader">
+
+    <!-- Existing uploaded documents -->
+    <div class="ubct-document-grid">
+        {% for document in uploaded_documents %}
+            <article class="ubct-document-card">
+
+                <div class="ubct-document-icon">
+                    {% if document.file.name|lower|slice:"-4:" == ".pdf" %}
+                        <span>PDF</span>
+                    {% else %}
+                        <span>IMG</span>
+                    {% endif %}
+                </div>
+
+                <div class="ubct-document-info">
+                    <a
+                        href="{{ document.download_url }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="ubct-document-name"
+                    >
+                        {{ document.file.name|cut:"request_documents/" }}
+                    </a>
+
+                    <span class="ubct-document-meta">
+                        Supporting file
+                    </span>
+
+                    <!-- Update this document's tag -->
+                    <form
+                        method="POST"
+                        action="{{ document.tag_url }}"
+                        class="ubct-document-tag-form"
+                    >
+                        {% csrf_token %}
+
+                        <label class="ubct-sr-only"
+                               for="document-tag-{{ document.pk }}">
+                            Document category
+                        </label>
+
+                        <select
+                            id="document-tag-{{ document.pk }}"
+                            name="tag"
+                            aria-label="Document category"
+                        >
+                            <option value="">Choose a tag</option>
+                            {% for tag_value, tag_label in document_tag_choices %}
+                                <option
+                                    value="{{ tag_value }}"
+                                    {% if document.tag == tag_value %}selected{% endif %}
+                                >
+                                    {{ tag_label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+
+                        <button
+                            type="submit"
+                            class="ubct-btn ubct-btn-secondary ubct-btn-small"
+                        >
+                            Save tag
+                        </button>
+                    </form>
+                </div>
+
+                <div class="ubct-document-actions">
+                    <a
+                        href="{{ document.download_url }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="ubct-btn ubct-btn-secondary ubct-btn-small"
+                    >
+                        View
+                    </a>
+
+                    <form
+                        method="POST"
+                        action="{{ document.delete_url }}"
+                        onsubmit="return confirm('Delete this document? This cannot be undone.');"
+                    >
+                        {% csrf_token %}
+                        <button
+                            type="submit"
+                            class="ubct-btn ubct-btn-danger ubct-btn-small"
+                        >
+                            Delete
+                        </button>
+                    </form>
+                </div>
+
+            </article>
+        {% empty %}
+            <div class="ubct-document-empty">
+                <div class="ubct-document-empty-icon">↑</div>
+                <h3>No documents uploaded yet</h3>
+                <p>Choose files below to attach supporting documents.</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Upload new documents -->
+    <form
+        method="POST"
+        enctype="multipart/form-data"
+        action="{{ upload_url }}"
+        class="ubct-document-upload-form"
+    >
+        {% csrf_token %}
+
+        <label for="document-files" class="ubct-field-label">
+            Add documents
+        </label>
+
+        <input
+            type="file"
+            id="document-files"
+            name="documents"
+            accept=".pdf,.jpg,.jpeg,.png"
+            multiple
+            required
+        >
+
+        <p class="ubct-help-text">
+            PDF, JPG, JPEG or PNG. You can select multiple files.
+        </p>
+
+        <button type="submit" class="ubct-btn ubct-btn-primary">
+            Upload documents
+        </button>
+    </form>
+
+</section>

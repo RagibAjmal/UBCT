@@ -1,0 +1,514 @@
+{% load socialaccount %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#064C43">
+    <title>Sign In - UBCT Portal</title>
+    <style>
+        :root {
+            --green: #064C43;
+            --green-dark: #043A33;
+            --green-soft: #EAF3EF;
+            --gold: #C6921E;
+            --ink: #26332F;
+            --muted: #68756F;
+            --border: #DFE6E1;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, Helvetica, sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(ellipse at 12% 10%, rgba(198, 146, 30, .12), transparent 30%),
+                radial-gradient(ellipse at 90% 90%, rgba(6, 76, 67, .10), transparent 34%),
+                #F5F8F6;
+        }
+
+        .login-layout {
+            width: min(980px, 100%);
+            min-height: 590px;
+            display: grid;
+            grid-template-columns: .95fr 1.05fr;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            overflow: hidden;
+            box-shadow: 0 24px 70px rgba(4, 58, 51, .13);
+        }
+
+        .login-brand-panel {
+            position: relative;
+            overflow: hidden;
+            padding: 48px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: var(--green);
+            color: white;
+        }
+
+        .login-brand-panel::before,
+        .login-brand-panel::after {
+            content: "";
+            position: absolute;
+            border: 1px solid rgba(255,255,255,.14);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .login-brand-panel::before {
+            width: 370px;
+            height: 370px;
+            right: -160px;
+            top: 100px;
+        }
+
+        .login-brand-panel::after {
+            width: 270px;
+            height: 270px;
+            right: -110px;
+            top: 150px;
+        }
+
+        .login-brand-content,
+        .login-brand-footer {
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-logo-wrap {
+            width: 95px;
+            height: 95px;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border: 2px solid var(--gold);
+            border-radius: 18px;
+            margin-bottom: 30px;
+        }
+
+        .login-logo {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .brand-kicker {
+            color: #F1D48F;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1.6px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .brand-heading {
+            margin: 0 0 18px;
+            font-size: clamp(27px, 3.1vw, 38px);
+            line-height: 1.15;
+            letter-spacing: -1px;
+            font-weight: 800;
+        }
+
+        .brand-description {
+            max-width: 350px;
+            color: rgba(255,255,255,.79);
+            font-size: 14px;
+            line-height: 1.8;
+            margin: 0;
+        }
+
+        .brand-divider {
+            width: 55px;
+            height: 3px;
+            background: var(--gold);
+            border-radius: 4px;
+            margin: 25px 0;
+        }
+
+        .brand-footer {
+            color: rgba(255,255,255,.65);
+            font-size: 11px;
+            line-height: 1.7;
+        }
+
+        .login-form-panel {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 48px 46px;
+        }
+
+        .login-form-inner {
+            width: 100%;
+            max-width: 360px;
+        }
+
+        .mobile-brand {
+            display: none;
+        }
+
+        .form-eyebrow {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--green);
+            text-transform: uppercase;
+            letter-spacing: 1.3px;
+            margin-bottom: 10px;
+        }
+
+        .form-title {
+            color: var(--green-dark);
+            font-size: 29px;
+            line-height: 1.2;
+            letter-spacing: -.7px;
+            margin: 0 0 8px;
+        }
+
+        .form-subtitle {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
+            margin: 0 0 27px;
+        }
+
+        .login-alert {
+            padding: 11px 13px;
+            margin: 0 0 17px;
+            border: 1px solid #F0C8C8;
+            border-radius: 7px;
+            color: #8E2929;
+            background: #FFF4F4;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .google-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 11px;
+            width: 100%;
+            min-height: 46px;
+            padding: 11px 15px;
+            border: 1px solid #D5DDD8;
+            border-radius: 7px;
+            background: white;
+            color: #33413B;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+            transition: background .18s, border-color .18s;
+        }
+
+        .google-button:hover {
+            background: #F8FAF9;
+            border-color: #AEBDB4;
+        }
+
+        .google-icon {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .login-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 22px 0;
+            color: #89928D;
+            font-size: 11px;
+            white-space: nowrap;
+        }
+
+        .login-divider::before,
+        .login-divider::after {
+            content: "";
+            height: 1px;
+            background: var(--border);
+            flex: 1;
+        }
+
+        .login-field {
+            margin-bottom: 17px;
+        }
+
+        .login-field label {
+            display: block;
+            color: #34463F;
+            font-size: 12px;
+            font-weight: 800;
+            margin-bottom: 7px;
+        }
+
+        .login-input-wrap {
+            position: relative;
+        }
+
+        .login-input {
+            width: 100%;
+            min-height: 46px;
+            padding: 12px 13px;
+            border: 1px solid #CBD7D0;
+            border-radius: 7px;
+            background: #fff;
+            color: var(--ink);
+            font-family: inherit;
+            font-size: 14px;
+            transition: border-color .18s, box-shadow .18s;
+        }
+
+        .login-input:focus {
+            outline: none;
+            border-color: var(--green);
+            box-shadow: 0 0 0 3px rgba(6, 76, 67, .12);
+        }
+
+        .password-input { padding-right: 74px; }
+
+        .toggle-password {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            border: 0;
+            border-radius: 4px;
+            padding: 5px 6px;
+            background: transparent;
+            color: var(--green);
+            font: inherit;
+            font-size: 11px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .toggle-password:hover { background: var(--green-soft); }
+
+        .login-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            width: 100%;
+            min-height: 47px;
+            margin-top: 8px;
+            padding: 12px 16px;
+            border: 1px solid var(--green);
+            border-radius: 7px;
+            background: var(--green);
+            color: white;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 5px 13px rgba(6, 76, 67, .14);
+            transition: background .18s, transform .18s;
+        }
+
+        .login-button:hover {
+            background: var(--green-dark);
+            transform: translateY(-1px);
+        }
+
+        .login-security-note {
+            margin: 20px 0 0;
+            text-align: center;
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .login-security-note span { color: var(--green); }
+
+        @media (max-width: 760px) {
+            body { padding: 14px; }
+
+            .login-layout {
+                width: min(460px, 100%);
+                min-height: 0;
+                grid-template-columns: 1fr;
+                border-radius: 16px;
+            }
+
+            .login-brand-panel { display: none; }
+
+            .login-form-panel { padding: 34px 25px 30px; }
+
+            .mobile-brand {
+                display: flex;
+                align-items: center;
+                gap: 13px;
+                margin-bottom: 30px;
+            }
+
+            .mobile-brand img {
+                width: 54px;
+                height: 54px;
+                object-fit: contain;
+                flex-shrink: 0;
+            }
+
+            .mobile-brand-name {
+                color: var(--green);
+                font-size: 14px;
+                font-weight: 900;
+                line-height: 1.3;
+            }
+
+            .mobile-brand-name span {
+                display: block;
+                margin-top: 3px;
+                color: var(--muted);
+                font-size: 10px;
+                letter-spacing: 1px;
+            }
+
+            .form-title { font-size: 27px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { transition: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <main class="login-layout">
+        <aside class="login-brand-panel">
+            <div class="login-brand-content">
+                <div class="login-logo-wrap">
+                    <img class="login-logo"
+                         src="{% static 'images/ubct-logo.png' %}"
+                         alt="United Brothers Charitable Trust logo">
+                </div>
+
+                <div class="brand-kicker">United in Purpose</div>
+                <h1 class="brand-heading">United Brothers<br>Charitable Trust</h1>
+                <div class="brand-divider"></div>
+                <p class="brand-description">
+                    Welcome to the UBCT Portal. Sign in securely to manage requests,
+                    follow progress, and support the trust's charitable work.
+                </p>
+            </div>
+
+            <div class="login-brand-footer">
+                No. 9/4, Velayutha Achary Street, Pudupet,<br>
+                Chennai, Tamil Nadu - 600 002.
+            </div>
+        </aside>
+
+        <section class="login-form-panel">
+            <div class="login-form-inner">
+                <div class="mobile-brand">
+                    <img src="{% static 'images/ubct-logo.png' %}" alt="UBCT logo">
+                    <div class="mobile-brand-name">
+                        UNITED BROTHERS
+                        <span>CHARITABLE TRUST</span>
+                    </div>
+                </div>
+
+                <div class="form-eyebrow">UBCT Portal</div>
+                <h2 class="form-title">Welcome back</h2>
+                <p class="form-subtitle">Sign in to continue to your account.</p>
+
+                {% if form.non_field_errors %}
+                    <div class="login-alert" role="alert">
+                        {% for error in form.non_field_errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="login-alert" role="alert">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+
+                <a href="{% provider_login_url 'google' %}" class="google-button">
+                    <svg class="google-icon" viewBox="0 0 48 48" aria-hidden="true">
+                        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" transform="translate(0 4) scale(1)"/>
+                        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.73 7.18l7.64 5.93c4.46-4.12 7.13-10.2 7.13-17.58z"/>
+                        <path fill="#FBBC05" d="M10.53 28.59a14.4 14.4 0 0 1 0-9.18l-7.98-6.19a23.9 23.9 0 0 0 0 21.56l7.98-6.19z" transform="translate(0 0)"/>
+                        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.91-5.8l-7.64-5.93c-2.12 1.42-4.84 2.26-8.27 2.26-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                    </svg>
+                    Continue with Google
+                </a>
+
+                <div class="login-divider">OR SIGN IN WITH USERNAME</div>
+
+                <form method="POST" action="{% url 'account_login' %}">
+                    {% csrf_token %}
+
+                    <div class="login-field">
+                        <label for="id_login">Username</label>
+                        <input
+                            id="id_login"
+                            type="text"
+                            name="login"
+                            class="login-input"
+                            placeholder="Enter your username"
+                            autocomplete="username"
+                            required
+                        >
+                    </div>
+
+                    <div class="login-field">
+                        <label for="id_password">Password</label>
+                        <div class="login-input-wrap">
+                            <input
+                                id="id_password"
+                                type="password"
+                                name="password"
+                                class="login-input password-input"
+                                placeholder="Enter your password"
+                                autocomplete="current-password"
+                                required
+                            >
+                            <button type="button" class="toggle-password"
+                                    id="togglePassword" aria-controls="id_password"
+                                    aria-pressed="false">Show</button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="login-button">
+                        Sign In <span aria-hidden="true">→</span>
+                    </button>
+                </form>
+
+                <p class="login-security-note">
+                    <span aria-hidden="true">●</span>
+                    Your account access is protected. Please do not share your password.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        (function () {
+            const passwordInput = document.getElementById("id_password");
+            const toggleButton = document.getElementById("togglePassword");
+
+            toggleButton.addEventListener("click", function () {
+                const isPassword = passwordInput.type === "password";
+                passwordInput.type = isPassword ? "text" : "password";
+                toggleButton.textContent = isPassword ? "Hide" : "Show";
+                toggleButton.setAttribute("aria-pressed", String(isPassword));
+            });
+        })();
+    </script>
+</body>
+</html>
