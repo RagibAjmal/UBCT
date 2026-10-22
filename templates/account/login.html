@@ -324,6 +324,27 @@
             transform: translateY(-1px);
         }
 
+        .login-account-links {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 17px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .login-account-links a {
+            color: var(--green);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .login-account-links a:hover {
+            text-decoration: underline;
+        }
+
         .login-security-note {
             margin: 20px 0 0;
             text-align: center;
@@ -488,6 +509,11 @@
                         Sign In <span aria-hidden="true">→</span>
                     </button>
                 </form>
+
+                <div class="login-account-links">
+                    <a href="{% url 'account_reset_password' %}">Forgot password?</a>
+                    <span>New to UBCT? <a href="{% url 'account_signup' %}">Create an account</a></span>
+                </div>
 
                 <p class="login-security-note">
                     <span aria-hidden="true">●</span>

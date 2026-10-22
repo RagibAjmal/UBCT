@@ -1019,6 +1019,68 @@ textarea {
   color: #a12e2e;
   font-size: 12px;
 }
+.ubct-auth-card {
+  max-width: 680px;
+  margin: 0 auto 28px;
+}
+.ubct-auth-google,
+.ubct-auth-submit {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+}
+.ubct-auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 22px 0;
+  color: var(--ubct-muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.ubct-auth-divider::before,
+.ubct-auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--ubct-border);
+}
+.ubct-auth-footnote {
+  margin: 20px 0 0;
+  color: var(--ubct-muted);
+  font-size: 13px;
+  text-align: center;
+}
+.ubct-auth-footnote a {
+  color: var(--ubct-green);
+  font-weight: 800;
+}
+.ubct-auth-message {
+  padding: 38px 24px;
+  text-align: center;
+}
+.ubct-auth-message .ubct-title {
+  margin-bottom: 10px;
+}
+.ubct-auth-message .ubct-subtitle {
+  margin: 0 auto 22px;
+  max-width: 480px;
+}
+.ubct-auth-success-icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background: #e5f4eb;
+  color: var(--ubct-green);
+  font-size: 24px;
+  font-weight: 800;
+}
 .ubct-beneficiary-row {
   display: flex;
   align-items: center;
@@ -2005,14 +2067,14 @@ textarea {
 
 .ubct-document-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
     gap: 16px;
     margin-bottom: 24px;
 }
 
 .ubct-document-card {
     display: grid;
-    grid-template-columns: 48px minmax(0, 1fr) auto;
+    grid-template-columns: 48px minmax(0, 1fr);
     align-items: start;
     gap: 14px;
     padding: 16px;
@@ -2078,7 +2140,9 @@ textarea {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+    grid-column: 1 / -1;
     justify-content: flex-end;
+    margin-top: 2px;
 }
 
 .ubct-document-actions form {
@@ -2212,7 +2276,7 @@ textarea {
     }
 
     .ubct-document-actions {
-        grid-column: 2;
+        grid-column: 1 / -1;
         justify-content: flex-start;
     }
 

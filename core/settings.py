@@ -184,10 +184,12 @@ CSRF_TRUSTED_ORIGINS = ['https://*.lhr.life']
 
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
-
 MAILERS = {
     'default': {
-        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
+        'BACKEND': os.environ.get(
+            "DJANGO_EMAIL_BACKEND",
+            "core.email_backends.ReadableConsoleEmailBackend",
+        ),
     },
 }
 
@@ -196,6 +198,7 @@ AUTH_USER_MODEL = 'accounts.UBCTUser'
 SITE_ID = 1
 LOGIN_REDIRECT_URL = '/dashboard/'
 ACCOUNT_EMAIL_VERIFICATION = "none"
+ACCOUNT_SIGNUP_FIELDS = ["email*", "username*", "password1*", "password2*"]
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {

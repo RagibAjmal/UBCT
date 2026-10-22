@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load socialaccount %}
+
+{% block title %}Create an Account | UBCT Portal{% endblock %}
+
+{% block content %}
+<main class="ubct-form-page">
+    <header class="ubct-page-heading">
+        <span class="ubct-eyebrow">Member access</span>
+        <h1 class="ubct-title">Create your account</h1>
+        <p class="ubct-subtitle">
+            Sign up with Google or create a username and password.
+        </p>
+    </header>
+
+    <section class="ubct-card ubct-auth-card">
+        <div class="ubct-card-body">
+            <a href="{% provider_login_url 'google' %}" class="ubct-btn ubct-btn-secondary ubct-auth-google">
+                Continue with Google
+            </a>
+
+            <div class="ubct-auth-divider"><span>or sign up with email</span></div>
+
+            <form method="post" action="{% url 'account_signup' %}" class="ubct-account-password-form">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+
+                {% for field in form %}
+                    <div class="ubct-account-password-field">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.help_text %}
+                            <div class="ubct-help-text">{{ field.help_text }}</div>
+                        {% endif %}
+                        {% if field.errors %}
+                            <ul class="ubct-error-list">
+                                {% for error in field.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                {{ redirect_field }}
+
+                <button type="submit" class="ubct-btn ubct-btn-primary ubct-auth-submit">
+                    Create account
+                </button>
+            </form>
+
+            <p class="ubct-auth-footnote">
+                Already have an account? <a href="{% url 'account_login' %}">Sign in</a>
+            </p>
+        </div>
+    </section>
+</main>
+{% endblock %}

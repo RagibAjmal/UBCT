@@ -12,6 +12,8 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils import timezone
 from core.models import SystemSetting
 from django.views.decorators.http import require_POST
+
+from grants.utils import send_whatsapp_message
 from .forms import BeneficiaryForm, RequestForm
 from .models import ApprovalSignOff, Request, RequestDocument
 from grants.permissions import (
@@ -247,6 +249,7 @@ def approve_request(request, pk):
         req.status = Request.Status.APPROVED
         req.save()
         messages.success(request, f"Request approved! Threshold of {min_approvals} approvals reached. Status is now APPROVED.")
+        # send_whatsapp_message(settings.APPROVER_PHONE_NUMBER, msg)
     else:
         messages.success(request, f"Approval logged. ({current_approvals_count}/{min_approvals} approvals reached).")
 
