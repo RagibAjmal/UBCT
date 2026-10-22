@@ -2,7 +2,7 @@
 {% block title %}Add Fund Transfer | UBCT Portal{% endblock %}
 
 {% block content %}
-<main class="ubct-form-page">
+<div class="ubct-form-page">
     <header class="ubct-page-heading"><span class="ubct-eyebrow">Finance · Fund transfer</span><h1 class="ubct-title">Add Fund Transfer</h1><p class="ubct-subtitle">Recording a transfer for Request <span class="ubct-request-chip">#{{ req.request_id|default:req.pk }}</span>. Check the details before saving.</p></header>
     <section class="ubct-card">
         <div class="ubct-card-head"><h2>Transfer information</h2><p>Record the transfer amount, date, classification, and transaction reference.</p></div>
@@ -18,7 +18,7 @@
             </form>
         </div>
     </section>
-</main>
+</div>
 
 {% if transfer %}
     <section class="ubct-card">

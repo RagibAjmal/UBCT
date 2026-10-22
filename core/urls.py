@@ -37,7 +37,6 @@ urlpatterns = [
     path("requests/<int:pk>/submit-for-approval/",grant_views.submit_for_approval, name="submit_for_approval",),
     path("request/<int:pk>/documents/<int:document_pk>/delete/", grant_views.delete_request_document, name="delete_request_document",),
     path("request/<int:pk>/documents/<int:document_pk>/tag/", grant_views.tag_request_document, name="tag_request_document",),
-    # Uploaded documents are served through permission-checked download views.
     path("request/<int:pk>/documents/<int:document_pk>/download/", grant_views.download_request_document, name="download_request_document",),
     path("transfers/<int:transfer_pk>/documents/", finance_views.fund_transfer_documents, name="fund_transfer_documents",),
     path("transfers/<int:transfer_pk>/documents/<int:document_pk>/download/", finance_views.download_fund_transfer_document, name="download_fund_transfer_document",),

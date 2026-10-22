@@ -199,6 +199,7 @@ SITE_ID = 1
 LOGIN_REDIRECT_URL = '/dashboard/'
 ACCOUNT_EMAIL_VERIFICATION = "none"
 ACCOUNT_SIGNUP_FIELDS = ["email*", "username*", "password1*", "password2*"]
+SOCIALACCOUNT_ADAPTER = "accounts.adapters.UBCTSocialAccountAdapter"
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {

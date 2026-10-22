@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.paginator import Paginator
-from django.db.models import Q, Sum
+from django.db.models import Count, Prefetch, Q, Sum
 from django.http import FileResponse, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -15,6 +15,7 @@ from django.views.decorators.http import require_POST
 
 from grants.utils import send_whatsapp_message
 from .forms import BeneficiaryForm, RequestForm
+from finance.models import FundTransfer
 from .models import ApprovalSignOff, Request, RequestDocument
 from grants.permissions import (
     can_approve_requests,
@@ -83,10 +84,10 @@ def create_request(request):
 
     timeline_steps = [
         {"number": 1, "label": "Draft"},
-        {"number": 2, "label": "Documents Required"},
-        {"number": 3, "label": "Pending Approval"},
-        {"number": 4, "label": "Approved"},
-        {"number": 5, "label": "Transferred"},
+        {"number": 2, "label": "Documents Needed"},
+        {"number": 3, "label": "Awaiting Approval"},
+        {"number": 4, "label": "Approved for Payment"},
+        {"number": 5, "label": "Funds Transferred"},
     ]
 
     draft_request = Request(requester=request.user, status=Request.Status.DRAFT)
@@ -362,7 +363,17 @@ def submit_for_approval(request, pk):
 
 @login_required
 def request_detail(request, pk):
-    req = get_object_or_404(Request, pk=pk)
+    req = get_object_or_404(
+        Request.objects.prefetch_related(
+            Prefetch(
+                "fundtransfer_set",
+                queryset=FundTransfer.objects.annotate(
+                    document_count=Count("documents")
+                ),
+            )
+        ),
+        pk=pk,
+    )
 
     if not can_view_request(request.user, req):
         raise PermissionDenied
@@ -383,10 +394,10 @@ def request_detail(request, pk):
     # Define the request progress timeline.
     timeline_steps = [
         {"number": 1, "label": "Draft"},
-        {"number": 2, "label": "Documents Required"},
-        {"number": 3, "label": "Pending Approval"},
-        {"number": 4, "label": "Approved"},
-        {"number": 5, "label": "Transferred"},
+        {"number": 2, "label": "Documents Needed"},
+        {"number": 3, "label": "Awaiting Approval"},
+        {"number": 4, "label": "Approved for Payment"},
+        {"number": 5, "label": "Funds Transferred"},
     ]
 
     current_step = {
@@ -406,6 +417,7 @@ def request_detail(request, pk):
         "current_step": current_step,
         "edit_url": reverse("edit_request", kwargs={"pk": req.pk}),
         "can_edit_request": req.requester_id == request.user.pk,
+        "can_review_approvals": can_approve_requests(request.user),
         "can_manage_transfers": can_manage_fund_transfers(request.user),
     }
 

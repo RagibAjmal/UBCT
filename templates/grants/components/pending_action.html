@@ -9,16 +9,18 @@
 
     {% include 'grants/components/approval_log.html' with req=req %}
 
-    <form method="POST" action="{% url 'approve_request' req.pk %}" class="mt-4">
-        {% csrf_token %}
-        {% if has_approved %}
-            <button type="button" disabled class="ubct-btn ubct-btn-secondary">
-                ✓ Already Approved
-            </button>
-        {% else %}
-            <button type="submit" class="ubct-btn ubct-btn-primary">
-                Approve Request →
-            </button>
-        {% endif %}
-    </form>
+    {% if can_review_approvals %}
+        <form method="POST" action="{% url 'approve_request' req.pk %}" class="mt-4">
+            {% csrf_token %}
+            {% if has_approved %}
+                <button type="button" disabled class="ubct-btn ubct-btn-secondary">
+                    ✓ Already Approved
+                </button>
+            {% else %}
+                <button type="submit" class="ubct-btn ubct-btn-primary">
+                    Approve Request →
+                </button>
+            {% endif %}
+        </form>
+    {% endif %}
 </section>

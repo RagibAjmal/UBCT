@@ -66,19 +66,54 @@ class GrantAuthorizationTests(TestCase):
         url = reverse("request_detail", args=[self.pending_request.pk])
 
         self.client.force_login(self.owner)
-        self.assertEqual(self.client.get(url).status_code, 200)
+        owner_response = self.client.get(url)
+        self.assertEqual(owner_response.status_code, 200)
+        self.assertContains(owner_response, "Documents Needed")
+        self.assertContains(owner_response, "Awaiting Approval")
+        self.assertContains(owner_response, "Approved for Payment")
+        self.assertContains(owner_response, "Funds Transferred")
+        self.assertNotContains(owner_response, "Approve Request")
 
         self.client.force_login(self.other_user)
         self.assertEqual(self.client.get(url).status_code, 403)
 
         self.client.force_login(self.approver)
-        self.assertEqual(self.client.get(url).status_code, 200)
+        approver_response = self.client.get(url)
+        self.assertEqual(approver_response.status_code, 200)
+        self.assertContains(approver_response, "Approve Request")
 
         self.client.force_login(self.staff_user)
         self.assertEqual(self.client.get(url).status_code, 200)
 
         self.client.force_login(self.transfer_manager)
         self.assertEqual(self.client.get(url).status_code, 403)
+
+    def test_approved_request_renders_case_sensitive_approval_log_include(self):
+        self.client.force_login(self.owner)
+
+        response = self.client.get(
+            reverse("request_detail", args=[self.approved_request.pk])
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_transfer_document_count_is_prefetched_for_request_detail(self):
+        FundTransfer.objects.create(
+            request=self.approved_request,
+            amount=Decimal("100.00"),
+            transfer_date="2026-10-22",
+            classification=self.classification,
+            transaction_reference="test-reference",
+        )
+        self.client.force_login(self.owner)
+
+        response = self.client.get(
+            reverse("request_detail", args=[self.approved_request.pk])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        transfers = response.context["req"].fundtransfer_set.all()
+        self.assertEqual(transfers[0].document_count, 0)
 
     def test_transfer_manager_dashboard_lists_approved_requests(self):
         self.client.force_login(self.transfer_manager)

@@ -3,7 +3,7 @@
 {% block title %}{% if is_create_request %}Create New Request | UBCT Portal{% else %}Request {{ req.request_id|default:req.pk }} | UBCT Portal{% endif %}{% endblock %}
 
 {% block content %}
-<main class="ubct-request-detail">
+<div class="ubct-request-detail">
     <header class="ubct-page-heading">
         <div class="ubct-request-topline">
             <div>
@@ -33,19 +33,19 @@
     {% endif %}
 
     {% if req.status == req.Status.APPROVED or req.status == req.Status.TRANSFERRED %}
-        {% include "grants/components/Approval_log.html" %}
+        {% include "grants/components/approval_log.html" %}
     {% endif %}
 
     {% if req.status == req.Status.DRAFT and can_edit_request %}
         {% include 'grants/components/draft_action.html' with req=req form=form form_action=form_action|default:edit_url submit_label=submit_label|default:"Upload Documents →" is_create_request=is_create_request %}
     {% elif req.requester_id == request.user.pk and req.status == req.Status.DOCUMENTS_REQUIRED %}
         {% include "grants/components/document_upload.html" %}
-    {% elif req.status == req.Status.PENDING %}
+    {% elif req.status == req.Status.PENDING and can_review_approvals %}
         {% include 'grants/components/pending_action.html' with req=req has_approved=has_approved %}
     {% elif req.status == req.Status.APPROVED %}
         {% include 'grants/components/approved_action.html' with req=req %}
     {% elif req.status == req.Status.TRANSFERRED %}
         {% include 'grants/components/transferred_action.html' with req=req %}
     {% endif %}
-</main>
+</div>
 {% endblock %}
