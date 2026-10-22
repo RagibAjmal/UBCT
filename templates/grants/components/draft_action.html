@@ -4,14 +4,21 @@
     <!-- Draft form -->
     <section class="ubct-card">
         <div class="ubct-card-head">
-            <h2>Edit Draft Request</h2>
-            <p>
-                Review and update all request details before continuing
-                to document upload.
-            </p>
+            {% if is_create_request %}
+                <h2>Create New Request</h2>
+                <p>
+                    Complete the form below to create a new request. Save it as a draft or submit it immediately for document upload.
+                </p>
+            {% else %}
+                <h2>Edit Draft Request</h2>
+                <p>
+                    Review and update all request details before continuing
+                    to document upload.
+                </p>
+            {% endif %}
         </div>
         <div class="ubct-card-body">
-           {% include "grants/components/request_form.html" with form=form form_action=edit_url show_save_draft=True submit_label="Upload Documents →" %}
+           {% include "grants/components/request_form.html" with form=form form_action=form_action|default:edit_url show_save_draft=True submit_label=submit_label|default:"Upload Documents →" %}
         </div>
     </section>
 

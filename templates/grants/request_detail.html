@@ -1,15 +1,20 @@
 {% extends 'base.html' %}
 
-{% block title %}Request {{ req.request_id|default:req.pk }} | UBCT Portal{% endblock %}
+{% block title %}{% if is_create_request %}Create New Request | UBCT Portal{% else %}Request {{ req.request_id|default:req.pk }} | UBCT Portal{% endif %}{% endblock %}
 
 {% block content %}
 <main class="ubct-request-detail">
     <header class="ubct-page-heading">
         <div class="ubct-request-topline">
             <div>
-                <span class="ubct-eyebrow">Request tracking</span>
-                <h1 class="ubct-title">Request <span class="ubct-request-id">#{{ req.request_id|default:req.pk }}</span></h1>
-                <p class="ubct-subtitle">Review the request details, follow its current stage, and see any actions or transfer records associated with it.</p>
+                <span class="ubct-eyebrow">{% if is_create_request %}Request management{% else %}Request tracking{% endif %}</span>
+                {% if is_create_request %}
+                    <h1 class="ubct-title">Create New Request</h1>
+                    <p class="ubct-subtitle">Create a new request and decide whether to save it as a draft or submit it immediately.</p>
+                {% else %}
+                    <h1 class="ubct-title">Request <span class="ubct-request-id">#{{ req.request_id|default:req.pk }}</span></h1>
+                    <p class="ubct-subtitle">Review the request details, follow its current stage, and see any actions or transfer records associated with it.</p>
+                {% endif %}
             </div>
             <a href="{% url 'dashboard' %}" class="ubct-btn ubct-btn-secondary">← Back to dashboard</a>
         </div>
@@ -18,8 +23,8 @@
     {% include 'grants/components/request_timeline.html' with req=req %}
 
     {% include "grants/components/request_raised_by.html" with requester=req.requester created_at=req.created_at %}
-    
-    {% if req.status != req.Status.DRAFT or not can_edit_request %}
+
+    {% if not is_create_request and req.status != req.Status.DRAFT or not can_edit_request %}
         {% include 'grants/components/basic_info.html' with req=req %}
     {% endif %}
 
@@ -32,7 +37,7 @@
     {% endif %}
 
     {% if req.status == req.Status.DRAFT and can_edit_request %}
-        {% include 'grants/components/draft_action.html' with req=req form=form %}
+        {% include 'grants/components/draft_action.html' with req=req form=form form_action=form_action|default:edit_url submit_label=submit_label|default:"Upload Documents →" is_create_request=is_create_request %}
     {% elif req.requester_id == request.user.pk and req.status == req.Status.DOCUMENTS_REQUIRED %}
         {% include "grants/components/document_upload.html" %}
     {% elif req.status == req.Status.PENDING %}

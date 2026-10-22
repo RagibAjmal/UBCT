@@ -1790,31 +1790,36 @@ textarea {
 
 @media (max-width: 640px) {
     .ubct-timeline {
-        flex-direction: column;
-        gap: 12px;
+        flex-direction: row;
+        align-items: flex-start;
     }
 
     .ubct-timeline-step {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        text-align: left;
+        flex: 1;
+        display: block;
+        text-align: center;
     }
 
     .ubct-timeline-marker {
-        flex: 0 0 34px;
-        margin: 0;
+        width: 30px;
+        height: 30px;
+        margin: 0 auto 7px;
+        font-size: 12px;
     }
 
     .ubct-timeline-step:not(:last-child)::after {
-        top: 34px;
-        left: 16px;
-        width: 2px;
-        height: 12px;
+        top: 14px;
+        left: calc(50% + 15px);
+        width: calc(100% - 30px);
+        height: 2px;
     }
 
     .ubct-timeline-label {
-        padding: 0;
+        padding: 0 2px;
+        font-size: clamp(0.55rem, 2.5vw, 0.72rem);
+        line-height: 1.25;
+        overflow-wrap: normal;
+        word-break: normal;
     }
 }
 

@@ -1,5 +1,8 @@
 from django.db import models
+from django.core.validators import MinValueValidator
+from decimal import Decimal
 from grants.models import Request
+from simple_history.models import HistoricalRecords
 
 class Classification(models.Model):
     name = models.CharField(max_length=100, help_text="e.g., Education, Medical, General Corpus")
@@ -20,9 +23,15 @@ class Donation(models.Model):
     def __str__(self):
         return f"{self.donor_name} - ₹{self.amount} ({self.receipt_date})"
 
+    history = HistoricalRecords()
+
 class FundTransfer(models.Model):
     request = models.ForeignKey(Request, on_delete=models.PROTECT, help_text="Links to the approved voucher")
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        validators=[MinValueValidator(Decimal("0.01"))],
+    )
     transfer_date = models.DateField()
     classification = models.ForeignKey(Classification, on_delete=models.SET_NULL, null=True)
     transaction_reference = models.CharField(max_length=100, help_text="e.g., IndusInd UTR number")

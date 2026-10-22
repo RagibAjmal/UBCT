@@ -82,6 +82,43 @@ class TransferAuthorizationTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(FundTransfer.objects.filter(request=self.request).count(), 2)
 
+    def test_invalid_transfer_submission_returns_form_errors_without_creating_record(self):
+        add_url = reverse("add_fund_transfer", args=[self.request.pk])
+        original_count = FundTransfer.objects.filter(request=self.request).count()
+        invalid_payloads = (
+            {
+                "amount": "0",
+                "transfer_date": "2026-10-22",
+                "classification": str(self.classification.pk),
+                "transaction_reference": "zero-amount",
+            },
+            {
+                "amount": "not-a-number",
+                "transfer_date": "not-a-date",
+                "classification": "not-a-classification",
+                "transaction_reference": "",
+            },
+            {
+                "amount": "99999999999.00",
+                "transfer_date": "2026-10-22",
+                "classification": str(self.classification.pk),
+                "transaction_reference": "amount-too-large",
+            },
+        )
+
+        self.client.force_login(self.transfer_manager)
+        for payload in invalid_payloads:
+            with self.subTest(payload=payload):
+                response = self.client.post(add_url, payload)
+                self.assertEqual(response.status_code, 200)
+                self.assertIn("form", response.context)
+                self.assertTrue(response.context["form"].errors)
+
+        self.assertEqual(
+            FundTransfer.objects.filter(request=self.request).count(),
+            original_count,
+        )
+
     def test_transfer_document_download_obeys_document_visibility(self):
         media_directory = TemporaryDirectory()
         self.addCleanup(media_directory.cleanup)

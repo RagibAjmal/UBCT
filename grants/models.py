@@ -1,12 +1,18 @@
 from django.db import models
 from django.conf import settings
 import datetime
+from .validators import validate_request_upload
 
 class Beneficiary(models.Model):
     full_name = models.CharField(max_length=255)
     contact_number = models.CharField(max_length=20)
     address = models.TextField()
-    identity_document = models.FileField(upload_to='kyc_docs/', null=True, blank=True)
+    identity_document = models.FileField(
+        upload_to='kyc_docs/',
+        null=True,
+        blank=True,
+        validators=[validate_request_upload],
+    )
     bank_account_details = models.TextField(help_text="Bank, Branch, Account No, IFSC")
 
     def __str__(self):
@@ -77,7 +83,10 @@ class ApprovalSignOff(models.Model):
 
 class RequestDocument(models.Model):
     request = models.ForeignKey(Request, on_delete=models.CASCADE, related_name='documents')
-    file = models.FileField(upload_to='request_documents/%Y/%m/')
+    file = models.FileField(
+        upload_to='request_documents/%Y/%m/',
+        validators=[validate_request_upload],
+    )
     tag = models.CharField(max_length=50, blank=True, null=True, help_text="e.g., Medical Bill, ID Proof, Quotation")
     uploaded_at = models.DateTimeField(auto_now_add=True)
 

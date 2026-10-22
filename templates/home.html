@@ -40,16 +40,14 @@
 
         /* Navigation */
         .navbar { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,.97); border-bottom: 1px solid var(--border); backdrop-filter: blur(12px); }
-        .nav-inner { min-height: 82px; display: flex; align-items: center; justify-content: space-between; gap: 25px; }
-        .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
-        .brand-logo { width: 57px; height: 57px; object-fit: contain; flex-shrink: 0; }
-        .brand-name { color: var(--green); font-size: 15px; line-height: 1.25; font-weight: 900; letter-spacing: .2px; }
-        .brand-subtitle { display: block; margin-top: 4px; font-size: 10px; font-weight: 600; color: var(--muted); letter-spacing: 1.1px; }
-        .nav-links { display: flex; align-items: center; gap: 22px; list-style: none; }
-        .nav-links a { font-size: 13px; font-weight: 700; color: #46544e; white-space: nowrap; }
-        .nav-links a:hover { color: var(--gold); }
-        .nav-links .nav-donate { background: var(--green); color: #fff; padding: 11px 17px; border-radius: 6px; }
-        .nav-links .nav-donate:hover { background: var(--green-dark); color: #fff; }
+        .nav-inner { min-height: 94px; display: flex; align-items: center; justify-content: space-between; gap: 25px; }
+        .brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
+        .brand-logo { width: 68px; height: 68px; object-fit: contain; flex-shrink: 0; }
+        .brand-name { color: var(--green); font-size: 20px; line-height: 1.2; font-weight: 900; letter-spacing: .35px; }
+        .brand-subtitle { display: block; margin-top: 5px; font-size: 11px; font-weight: 700; color: var(--muted); letter-spacing: 1.5px; }
+        .nav-actions { display: flex; align-items: center; gap: 10px; }
+        .nav-actions .nav-login { padding: 10px 13px; border: 1px solid var(--green); border-radius: 6px; color: var(--green); font-size: 13px; font-weight: 800; white-space: nowrap; }
+        .nav-actions .nav-login:hover { background: var(--green-light); }
 
         /* Hero */
         .hero { position: relative; overflow: hidden; background: radial-gradient(ellipse at 85% 20%, rgba(198,146,30,.13), transparent 33%), linear-gradient(135deg, #f4f8f5 0%, #fff 65%); }
@@ -60,8 +58,7 @@
         .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
         .hero-note { margin-top: 25px; color: var(--muted); font-size: 12px; }
         .hero-visual { position: relative; min-height: 390px; display: flex; align-items: center; justify-content: center; }
-        .visual-circle { width: min(100%, 400px); aspect-ratio: 1; border-radius: 50%; background: var(--green); display: flex; align-items: center; justify-content: center; padding: 45px; box-shadow: 0 25px 65px rgba(6,76,67,.18); position: relative; }
-        .visual-circle::before { content: ""; position: absolute; inset: 15px; border: 1px solid rgba(255,255,255,.2); border-radius: 50%; }
+        .visual-circle { width: min(100%, 400px); aspect-ratio: 1; border-radius: 50%; background: linear-gradient(145deg, #fff 0%, #f7f2e5 100%); border: 1px solid rgba(6,76,67,.08); display: flex; align-items: center; justify-content: center; padding: 45px; box-shadow: 0 25px 65px rgba(6,76,67,.12); position: relative; }
         .hero-logo { width: 76%; max-height: 76%; object-fit: contain; position: relative; z-index: 1; }
         .visual-caption { position: absolute; right: -5px; bottom: 30px; max-width: 230px; padding: 19px 22px; border-radius: 12px; background: #fff; box-shadow: var(--shadow); border-left: 4px solid var(--gold); }
         .visual-caption strong { display: block; color: var(--green); font-size: 16px; line-height: 1.4; }
@@ -78,11 +75,8 @@
 
         /* About */
         .about-grid { display: grid; grid-template-columns: .9fr 1.1fr; gap: 75px; align-items: center; }
-        .about-visual { min-height: 360px; position: relative; display: flex; align-items: center; justify-content: center; background: var(--green-light); border-radius: 22px; overflow: hidden; padding: 35px; }
-        .about-visual::before, .about-visual::after { content: ""; position: absolute; border-radius: 50%; border: 1px solid rgba(6,76,67,.15); }
-        .about-visual::before { width: 290px; height: 290px; }
-        .about-visual::after { width: 350px; height: 350px; }
-        .about-logo { position: relative; z-index: 1; width: 190px; height: 190px; object-fit: contain; }
+        .about-visual { min-height: 360px; position: relative; display: flex; align-items: center; justify-content: center; background: linear-gradient(145deg, #eaf3ef 0%, #f8f3e6 100%); border-radius: 22px; overflow: hidden; padding: 35px; }
+        .about-logo { position: relative; z-index: 1; width: 260px; height: 260px; padding: 28px; border-radius: 20px; background: #fff; box-shadow: 0 18px 45px rgba(6,76,67,.12); object-fit: contain; }
         .about-content .section-description { margin-bottom: 20px; }
         .about-points { list-style: none; margin: 24px 0 28px; }
         .about-points li { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 13px; font-size: 14px; font-weight: 600; }
@@ -160,7 +154,6 @@
         .footer-bottom { border-top: 1px solid rgba(255,255,255,.15); padding: 20px 0; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; color: rgba(255,255,255,.6); font-size: 11px; }
 
         @media (max-width: 1000px) {
-            .nav-links { gap: 13px; }
             .sadaqah-grid { grid-template-columns: repeat(2, 1fr); }
             .hero-grid { gap: 35px; }
             .footer-grid { gap: 30px; }
@@ -168,12 +161,12 @@
         @media (max-width: 720px) {
             .container { width: min(100% - 30px, 560px); }
             .section { padding: 63px 0; }
-            .nav-inner { min-height: 72px; flex-wrap: wrap; padding: 10px 0; }
-            .brand-logo { width: 46px; height: 46px; }
-            .brand-name { font-size: 13px; }
-            .nav-links { width: 100%; overflow-x: auto; padding: 7px 0 4px; gap: 20px; }
-            .nav-links li { flex-shrink: 0; }
-            .nav-links a { font-size: 12px; }
+            .nav-inner { min-height: 78px; gap: 12px; }
+            .brand { gap: 9px; }
+            .brand-logo { width: 48px; height: 48px; }
+            .brand-name { font-size: 15px; letter-spacing: .1px; }
+            .brand-subtitle { margin-top: 3px; font-size: 9px; letter-spacing: .9px; }
+            .nav-actions .nav-login { padding: 9px 10px; font-size: 12px; }
             .hero-grid { grid-template-columns: 1fr; padding-top: 52px; padding-bottom: 62px; gap: 30px; }
             .hero h1 { font-size: clamp(39px, 10vw, 54px); letter-spacing: -1.4px; }
             .hero-description { font-size: 15px; }
@@ -185,8 +178,7 @@
             .mission-item:last-child { border-bottom: 0; }
             .about-grid, .contact-grid { grid-template-columns: 1fr; gap: 35px; }
             .about-visual { min-height: 280px; }
-            .about-visual::before { width: 230px; height: 230px; }
-            .about-visual::after { width: 275px; height: 275px; }
+            .about-logo { width: 230px; height: 230px; padding: 24px; }
             .sadaqah-grid { grid-template-columns: 1fr 1fr; gap: 13px; }
             .sadaqah-card { padding: 22px 13px; }
             .sadaqah-cta { align-items: flex-start; flex-direction: column; padding: 25px; }
@@ -220,33 +212,13 @@
             <img class="brand-logo" src="{% static 'images/ubct-logo.png' %}" alt="United Brothers Charitable Trust logo">
             <span class="brand-name">UNITED BROTHERS<span class="brand-subtitle">CHARITABLE TRUST</span></span>
         </a>
-        <nav aria-label="Main navigation">
-            <ul class="nav-links">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#about">About Us</a></li>
-                <li><a href="#initiatives">Our Focus</a></li>
-                <li><a href="#get-involved">Get Involved</a></li>
-                <li><a href="#contact">Contact</a></li>
-
-                {% if user.is_authenticated %}
-                    <li>
-                        <a class="nav-login" href="{% url 'dashboard' %}">
-                            Dashboard
-                        </a>
-                    </li>
-                {% else %}
-                    <li>
-                        <a class="nav-login" href="{% url 'account_login' %}">
-                            Login
-                        </a>
-                    </li>
-                {% endif %}
-
-                <li>
-                    <a class="nav-donate" href="#get-involved">Support Our Work</a>
-                </li>
-            </ul>
-        </nav>
+        <div class="nav-actions">
+            {% if user.is_authenticated %}
+                <a class="nav-login" href="{% url 'dashboard' %}">Dashboard</a>
+            {% else %}
+                <a class="nav-login" href="{% url 'account_login' %}">Login</a>
+            {% endif %}
+        </div>
     </div>
 </header>
 

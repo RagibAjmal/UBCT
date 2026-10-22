@@ -3,12 +3,13 @@ from pathlib import Path
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.paginator import Paginator
 from django.db.models import Q, Sum
 from django.http import FileResponse, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils import timezone
 from core.models import SystemSetting
 from django.views.decorators.http import require_POST
@@ -66,34 +67,62 @@ def create_request(request):
 
             if action == "submit":
                 new_request.status = Request.Status.DOCUMENTS_REQUIRED
-            else:
-                new_request.status = Request.Status.DRAFT
-
-            new_request.save()
-
-            if action == "submit":
                 messages.success(
                     request,
                     "Request created. You can now upload documents and request approval."
                 )
-                return redirect("request_detail", pk=new_request.pk)
+            else:
+                new_request.status = Request.Status.DRAFT
+                messages.success(request, "Request saved as a draft.")
 
-            messages.success(request, "Request saved as a draft.")
+            new_request.save()
             return redirect("request_detail", pk=new_request.pk)
     else:
         form = RequestForm()
 
+    timeline_steps = [
+        {"number": 1, "label": "Draft"},
+        {"number": 2, "label": "Documents Required"},
+        {"number": 3, "label": "Pending Approval"},
+        {"number": 4, "label": "Approved"},
+        {"number": 5, "label": "Transferred"},
+    ]
+
+    draft_request = Request(requester=request.user, status=Request.Status.DRAFT)
+
     return render(
         request,
-        "grants/create_request.html",
-        {"form": form},
+        "grants/request_detail.html",
+        {
+            "req": draft_request,
+            "is_create_request": True,
+            "form": form,
+            "form_action": reverse("create_request"),
+            "edit_url": reverse("create_request"),
+            "submit_label": "Create Request →",
+            "has_approved": False,
+            "uploaded_documents": [],
+            "timeline_steps": timeline_steps,
+            "current_step": 1,
+            "can_edit_request": True,
+            "can_manage_transfers": False,
+        },
     )
 
 
 @login_required
 def create_beneficiary(request):
-    # Capture the 'next' URL parameter
-    next_url = request.GET.get('next') or request.POST.get('next')
+    next_url = request.GET.get("next") or request.POST.get("next")
+    if next_url and not (
+        next_url.startswith("/")
+        and not next_url.startswith("//")
+        and url_has_allowed_host_and_scheme(
+            next_url,
+            allowed_hosts=set(),
+            require_https=request.is_secure(),
+        )
+    ):
+        next_url = None
 
     if request.method == 'POST':
         form = BeneficiaryForm(request.POST, request.FILES)
@@ -245,6 +274,34 @@ def upload_request_documents(request, pk):
 
     if not files:
         messages.error(request, "Please select at least one document to upload.")
+        return redirect("request_detail", pk=req.pk)
+
+    max_document_count = 10
+    max_batch_size = 25 * 1024 * 1024
+    existing_document_count = RequestDocument.objects.filter(request=req).count()
+
+    if existing_document_count + len(files) > max_document_count:
+        messages.error(request, "A request can have at most 10 supporting documents.")
+        return redirect("request_detail", pk=req.pk)
+
+    if sum(uploaded_file.size for uploaded_file in files) > max_batch_size:
+        messages.error(request, "The combined upload size cannot exceed 25 MiB.")
+        return redirect("request_detail", pk=req.pk)
+
+    file_field = RequestDocument._meta.get_field("file")
+    validation_errors = []
+    for uploaded_file in files:
+        try:
+            file_field.run_validators(uploaded_file)
+        except ValidationError as error:
+            validation_errors.extend(
+                f"{uploaded_file.name}: {message}"
+                for message in error.messages
+            )
+
+    if validation_errors:
+        for error in validation_errors:
+            messages.error(request, error)
         return redirect("request_detail", pk=req.pk)
 
     for uploaded_file in files:
