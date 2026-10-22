@@ -89,6 +89,98 @@ class GrantAuthorizationTests(TestCase):
         self.assertContains(response, "Approved Requests for Transfer")
         self.assertContains(response, self.approved_request.request_id)
 
+    def test_all_requests_searches_by_beneficiary_and_recipient(self):
+        self.pending_request.requested_for = "Searchable Recipient"
+        self.pending_request.save(update_fields=["requested_for"])
+        other_beneficiary = Beneficiary.objects.create(
+            full_name="Different Beneficiary",
+            contact_number="0987654321",
+            address="Other address",
+            bank_account_details="Other bank details",
+        )
+        self.approved_request.beneficiary = other_beneficiary
+        self.approved_request.save(update_fields=["beneficiary"])
+        self.client.force_login(self.approver)
+
+        beneficiary_response = self.client.get(
+            reverse("all_requests"),
+            {"q": "Test Beneficiary"},
+        )
+        recipient_response = self.client.get(
+            reverse("all_requests"),
+            {"q": "Searchable Recipient"},
+        )
+
+        self.assertEqual(beneficiary_response.status_code, 200)
+        self.assertEqual(
+            {req.pk for req in beneficiary_response.context["requests"]},
+            {self.pending_request.pk, self.draft_request.pk},
+        )
+        self.assertEqual(recipient_response.status_code, 200)
+        self.assertEqual(
+            [req.pk for req in recipient_response.context["requests"]],
+            [self.pending_request.pk],
+        )
+
+    def test_all_requests_searches_requester_name_and_keeps_owner_scope(self):
+        self.owner.first_name = "Searchable"
+        self.owner.last_name = "Requester"
+        self.owner.save(update_fields=["first_name", "last_name"])
+        self.client.force_login(self.approver)
+
+        response = self.client.get(
+            reverse("all_requests"),
+            {"q": "Searchable"},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            {req.pk for req in response.context["requests"]},
+            {self.pending_request.pk, self.approved_request.pk},
+        )
+
+        username_response = self.client.get(
+            reverse("all_requests"),
+            {"q": "owner"},
+        )
+        self.assertEqual(
+            {req.pk for req in username_response.context["requests"]},
+            {self.pending_request.pk, self.approved_request.pk},
+        )
+
+        self.client.force_login(self.other_user)
+        scoped_response = self.client.get(
+            reverse("all_requests"),
+            {"q": self.pending_request.request_id},
+        )
+        self.assertEqual(scoped_response.status_code, 200)
+        self.assertEqual(list(scoped_response.context["requests"]), [])
+
+    def test_all_requests_filters_by_status_and_ignores_invalid_status(self):
+        self.client.force_login(self.approver)
+
+        filtered_response = self.client.get(
+            reverse("all_requests"),
+            {"status": Request.Status.APPROVED},
+        )
+        self.assertEqual(
+            [req.pk for req in filtered_response.context["requests"]],
+            [self.approved_request.pk],
+        )
+
+        invalid_filter_response = self.client.get(
+            reverse("all_requests"),
+            {"status": "not-a-status"},
+        )
+        self.assertEqual(
+            {req.pk for req in invalid_filter_response.context["requests"]},
+            {
+                self.pending_request.pk,
+                self.approved_request.pk,
+                self.draft_request.pk,
+            },
+        )
+
     def test_only_request_owner_can_edit_draft(self):
         url = reverse("edit_request", args=[self.draft_request.pk])
 
@@ -219,6 +311,50 @@ class GrantAuthorizationTests(TestCase):
 
         self.client.force_login(self.other_user)
         self.assertEqual(self.client.get(url).status_code, 403)
+
+    def test_request_document_card_shows_filename_without_storage_path(self):
+        media_directory = TemporaryDirectory()
+        self.addCleanup(media_directory.cleanup)
+        self.enterContext(override_settings(MEDIA_ROOT=media_directory.name))
+        RequestDocument.objects.create(
+            request=self.pending_request,
+            file=SimpleUploadedFile("Untitled.png", b"image contents"),
+            tag="General",
+        )
+        self.client.force_login(self.owner)
+
+        response = self.client.get(
+            reverse("request_detail", args=[self.pending_request.pk])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Untitled.png")
+        self.assertContains(response, "Supporting document")
+        self.assertNotContains(response, "request_documents/")
+        self.assertNotContains(response, ">General<")
+
+    def test_supporting_document_tag_can_be_saved(self):
+        media_directory = TemporaryDirectory()
+        self.addCleanup(media_directory.cleanup)
+        self.enterContext(override_settings(MEDIA_ROOT=media_directory.name))
+        req = self.create_request(Request.Status.DOCUMENTS_REQUIRED)
+        document = RequestDocument.objects.create(
+            request=req,
+            file=SimpleUploadedFile("support.pdf", b"test file"),
+        )
+        self.client.force_login(self.owner)
+
+        response = self.client.post(
+            reverse(
+                "tag_request_document",
+                args=[req.pk, document.pk],
+            ),
+            {"tag": "General"},
+        )
+
+        self.assertEqual(response.status_code, 302)
+        document.refresh_from_db()
+        self.assertEqual(document.tag, "General")
 
     def test_request_document_upload_rejects_invalid_content_without_saving_any_files(self):
         req = self.create_request(Request.Status.DOCUMENTS_REQUIRED)

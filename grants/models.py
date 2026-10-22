@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 import datetime
+from pathlib import Path
 from .validators import validate_request_upload
 
 class Beneficiary(models.Model):
@@ -89,6 +90,10 @@ class RequestDocument(models.Model):
     )
     tag = models.CharField(max_length=50, blank=True, null=True, help_text="e.g., Medical Bill, ID Proof, Quotation")
     uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def display_name(self):
+        return Path(self.file.name).name
 
     def __str__(self):
         return f"{self.tag or 'Document'} for {self.request.id}"

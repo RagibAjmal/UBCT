@@ -26,12 +26,16 @@
 
                         <div class="ubct-document-info">
                             <strong class="ubct-document-name">
-                                {{ document.file.name|cut:"request_documents/" }}
+                                {{ document.display_name }}
                             </strong>
 
                             {% if document.tag %}
                                 <span class="ubct-document-meta">
-                                    {{ document.get_tag_display|default:document.tag }}
+                                    {% if document.tag == "General" %}
+                                        Supporting document
+                                    {% else %}
+                                        {{ document.get_tag_display|default:document.tag }}
+                                    {% endif %}
                                 </span>
                             {% else %}
                                 <span class="ubct-document-meta">

@@ -55,11 +55,11 @@
                         <div class="ubct-transfer-main">
 
                             <span class="ubct-transfer-ref">
-                                {{ document.get_tag_display|default:document.file.name }}
+                                {{ document.get_tag_display|default:"Supporting document" }}
                             </span>
 
                             <span class="ubct-transfer-meta">
-                                {{ document.file.name }}
+                                {{ document.display_name }}
                             </span>
 
                             {% if document.file %}

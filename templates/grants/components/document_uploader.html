@@ -21,7 +21,7 @@
                         rel="noopener noreferrer"
                         class="ubct-document-name"
                     >
-                        {{ document.file.name|cut:"request_documents/" }}
+                        {{ document.display_name }}
                     </a>
 
                     <span class="ubct-document-meta">
@@ -94,9 +94,13 @@
             </article>
         {% empty %}
             <div class="ubct-document-empty">
-                <div class="ubct-document-empty-icon">↑</div>
-                <h3>No documents uploaded yet</h3>
-                <p>Choose files below to attach supporting documents.</p>
+                <div class="ubct-document-empty-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" focusable="false">
+                        <path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 14v5h14v-5" />
+                    </svg>
+                </div>
+                <h3>No documents added yet</h3>
+                <p>Choose PDF or image files below to add supporting documents.</p>
             </div>
         {% endfor %}
     </div>
@@ -115,15 +119,17 @@
         </label>
 
         <input
+            class="ubct-document-file-input"
             type="file"
             id="document-files"
             name="documents"
             accept=".pdf,.jpg,.jpeg,.png"
             multiple
             required
+            aria-describedby="document-files-help"
         >
 
-        <p class="ubct-help-text">
+        <p class="ubct-help-text" id="document-files-help">
             PDF, JPG, JPEG or PNG only. Each file may be up to 10 MiB; up to 10
             files and 25 MiB total can be attached to a request.
         </p>

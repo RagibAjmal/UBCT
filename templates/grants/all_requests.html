@@ -16,7 +16,7 @@
                 </p>
             </div>
 
-            <div class="ubct-action-actions">
+            <div class="ubct-action-actions ubct-action-actions--compact">
                 <a href="{% url 'dashboard' %}"
                    class="ubct-btn ubct-btn-secondary">
                     ← Dashboard
@@ -61,17 +61,17 @@
     <section class="ubct-card">
         <div class="ubct-card-head">
             <h2>Find Requests</h2>
-            <p>Search by request ID, beneficiary, or requester username.</p>
+            <p>Search by request ID, beneficiary, recipient, or requester.</p>
         </div>
 
         <div class="ubct-card-body">
-            <form method="get" class="ubct-action-actions">
+            <form method="get" class="ubct-action-actions ubct-action-actions--compact ubct-request-search">
 
                 <input
                     type="search"
                     name="q"
                     value="{{ search_query }}"
-                    placeholder="Search requests..."
+                    placeholder="Request ID, beneficiary, recipient, or requester"
                     aria-label="Search requests"
                 >
 
@@ -198,7 +198,7 @@
         <!-- Pagination -->
         {% if page_obj.has_other_pages %}
         <div class="ubct-card-body">
-            <div class="ubct-action-actions">
+            <div class="ubct-action-actions ubct-action-actions--compact">
 
                 {% if page_obj.has_previous %}
                 <a class="ubct-btn ubct-btn-secondary"

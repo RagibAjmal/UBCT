@@ -47,6 +47,10 @@
                                 <span class="ubct-menu-icon" aria-hidden="true">⌂</span>
                                 <span>Dashboard</span>
                             </a>
+                            <a class="ubct-account-menu-item" href="{% if user.has_usable_password %}{% url 'account_change_password' %}{% else %}{% url 'account_set_password' %}{% endif %}">
+                                <span class="ubct-menu-icon" aria-hidden="true">⌑</span>
+                                <span>{% if user.has_usable_password %}Change Password{% else %}Set Password{% endif %}</span>
+                            </a>
                             {% if user.is_staff %}
                                 <a class="ubct-account-menu-item" href="{% url 'admin:index' %}">
                                     <span class="ubct-menu-icon" aria-hidden="true">⚙</span>

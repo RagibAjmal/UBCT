@@ -547,6 +547,37 @@ body.ubct-body {
   padding-top: 18px;
   border-top: 1px solid rgba(50, 80, 65, 0.14);
 }
+.ubct-action-actions--compact {
+  padding-top: 0;
+  border-top: 0;
+}
+.ubct-transfer-table-actions {
+  justify-content: flex-end;
+}
+.ubct-request-search input[type="search"],
+.ubct-request-search select {
+  min-height: 42px;
+  padding: 9px 12px;
+  border: 1px solid var(--ubct-border);
+  border-radius: 7px;
+  background: #fff;
+  color: var(--ubct-ink);
+  font: inherit;
+}
+.ubct-request-search input[type="search"] {
+  flex: 1 1 280px;
+  min-width: min(100%, 220px);
+}
+.ubct-request-search select {
+  flex: 0 1 190px;
+  min-width: 160px;
+}
+.ubct-request-search input[type="search"]:focus,
+.ubct-request-search select:focus {
+  outline: 0;
+  border-color: var(--ubct-green);
+  box-shadow: 0 0 0 3px rgba(6, 76, 67, 0.11);
+}
 .ubct-transfer-list {
   padding: 0;
   margin: 0;
@@ -945,6 +976,48 @@ textarea {
   padding-top: 20px;
   margin-top: 22px;
   border-top: 1px solid var(--ubct-border);
+}
+.ubct-account-password-form {
+  max-width: 620px;
+  margin: 0 auto;
+}
+.ubct-account-password-field {
+  margin-bottom: 18px;
+}
+.ubct-account-password-field label {
+  display: block;
+  margin-bottom: 7px;
+  color: #34463f;
+  font-size: 13px;
+  font-weight: 800;
+}
+.ubct-account-password-field input {
+  width: 100%;
+  min-height: 43px;
+  padding: 10px 12px;
+  border: 1px solid #cbd7d0;
+  border-radius: 7px;
+  background: #fff;
+  color: var(--ubct-ink);
+  font: inherit;
+}
+.ubct-account-password-field input:focus {
+  outline: 0;
+  border-color: var(--ubct-green);
+  box-shadow: 0 0 0 3px rgba(6, 76, 67, 0.11);
+}
+.ubct-account-password-field .helptext {
+  display: block;
+  margin-top: 6px;
+  color: var(--ubct-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.ubct-account-password-form .errorlist {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  color: #a12e2e;
+  font-size: 12px;
 }
 .ubct-beneficiary-row {
   display: flex;
@@ -1938,8 +2011,9 @@ textarea {
 }
 
 .ubct-document-card {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr) auto;
+    align-items: start;
     gap: 14px;
     padding: 16px;
     border: 1px solid #e1e5eb;
@@ -1966,6 +2040,7 @@ textarea {
     flex-direction: column;
     gap: 8px;
     min-width: 0;
+    padding-top: 2px;
 }
 
 .ubct-document-name {
@@ -2003,7 +2078,7 @@ textarea {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    margin-top: auto;
+    justify-content: flex-end;
 }
 
 .ubct-document-actions form {
@@ -2027,16 +2102,43 @@ textarea {
 
 .ubct-document-empty {
     grid-column: 1 / -1;
-    padding: 32px 20px;
+    padding: 28px 20px;
     border: 1px dashed #cbd5e1;
     border-radius: 12px;
     text-align: center;
     color: #64748b;
+    background: #fbfcfd;
+}
+
+.ubct-document-empty-icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin: 0 auto 12px;
+    border-radius: 50%;
+    background: #e8f3f0;
+    color: #07574d;
+}
+
+.ubct-document-empty-icon svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.7;
 }
 
 .ubct-document-empty h3 {
-    margin: 12px 0 6px;
+    margin: 0 0 6px;
     color: #334155;
+}
+
+.ubct-document-empty p {
+    margin: 0;
+    font-size: 14px;
 }
 
 .ubct-document-upload-form {
@@ -2046,11 +2148,40 @@ textarea {
     gap: 12px;
     padding: 20px;
     border-radius: 10px;
-    background: #f8fafc;
+    background: #f5f8f8;
 }
 
-.ubct-document-upload-form input[type="file"] {
+.ubct-document-upload-form .ubct-document-file-input {
     max-width: 100%;
+    padding: 7px;
+    border: 1px solid #d5dfdd;
+    border-radius: 8px;
+    background: #fff;
+    color: #334155;
+    font: inherit;
+    font-size: 14px;
+}
+
+.ubct-document-file-input::file-selector-button {
+    margin-right: 12px;
+    padding: 9px 13px;
+    border: 0;
+    border-radius: 6px;
+    background: #e5f1ee;
+    color: #07574d;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.ubct-document-file-input::file-selector-button:hover {
+    background: #d4e8e2;
+}
+
+.ubct-document-file-input:focus-visible {
+    outline: 3px solid rgba(7, 87, 77, 0.22);
+    outline-offset: 2px;
 }
 
 .ubct-sr-only {
@@ -2070,10 +2201,29 @@ textarea {
         grid-template-columns: 1fr;
     }
 
+    .ubct-document-card {
+        grid-template-columns: 42px minmax(0, 1fr);
+        gap: 12px;
+    }
+
+    .ubct-document-icon {
+        width: 42px;
+        height: 42px;
+    }
+
+    .ubct-document-actions {
+        grid-column: 2;
+        justify-content: flex-start;
+    }
+
     .ubct-document-actions > *,
     .ubct-document-actions form,
     .ubct-document-actions form button {
         max-width: 100%;
+    }
+
+    .ubct-document-upload-form {
+        padding: 16px;
     }
 }
 

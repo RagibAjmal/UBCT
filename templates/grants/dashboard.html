@@ -97,7 +97,7 @@
                         <td class="ubct-money">₹{{ req.requested_amount }}</td>
                         <td>{{ req.fundtransfer_set.all|length }}</td>
                         <td class="ubct-align-right">
-                            <div class="ubct-action-actions">
+                            <div class="ubct-action-actions ubct-action-actions--compact ubct-transfer-table-actions">
                                 <a href="{% url 'add_fund_transfer' req.pk %}"
                                    class="ubct-btn ubct-btn-secondary ubct-btn-small">
                                     Add transfer

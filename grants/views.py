@@ -1,6 +1,5 @@
 import hashlib
 from pathlib import Path
-
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied, ValidationError
@@ -434,6 +433,7 @@ def request_detail(request, pk):
                 kwargs={"pk": req.pk},
             ),
             "document_tag_choices": [
+                ("General", "Supporting document"),
                 ("IDENTITY", "Identity Proof"),
                 ("INVOICE", "Invoice"),
                 ("RECEIPT", "Receipt"),
@@ -510,7 +510,7 @@ def tag_request_document(request, pk, document_pk):
 
     if request.method == "POST":
         allowed_tags = {
-            "IDENTITY", "INVOICE", "RECEIPT", "APPLICATION", "OTHER"
+            "General", "IDENTITY", "INVOICE", "RECEIPT", "APPLICATION", "OTHER"
         }
         tag = request.POST.get("tag", "")
 
@@ -535,14 +535,17 @@ def all_requests(request):
             requester=request.user
         ).select_related("requester")
 
-    # Search by request ID, beneficiary, or requester username.
+    # Search only fields users are allowed to identify from the request list.
     search_query = request.GET.get("q", "").strip()
 
     if search_query:
         queryset = queryset.filter(
             Q(request_id__icontains=search_query)
-            | Q(beneficiary__icontains=search_query)
+            | Q(beneficiary__full_name__icontains=search_query)
+            | Q(requested_for__icontains=search_query)
             | Q(requester__username__icontains=search_query)
+            | Q(requester__first_name__icontains=search_query)
+            | Q(requester__last_name__icontains=search_query)
         )
 
     # Apply a status filter only if it is a valid choice.

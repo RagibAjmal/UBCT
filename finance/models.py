@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator
 from decimal import Decimal
+from pathlib import Path
 from grants.models import Request
 from simple_history.models import HistoricalRecords
 
@@ -59,6 +60,10 @@ class FundTransferDocument(models.Model):
         blank=True,
     )
     uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def display_name(self):
+        return Path(self.file.name).name
 
     def __str__(self):
         return f"Document for transfer {self.transfer_id}"
